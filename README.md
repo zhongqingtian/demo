@@ -1,2 +1,5 @@
-# demo
-自我练习
+hello.proto文件中定义了一个Hello Service 该服务包含了一个SayHello方法
+同时声明了HelloRequest和HelloReply消息结构 用于请求和响应。
+客户端使用HelloRequest参数调用SayHello方法请求服务端 服务端响应HelloReply消息
+根据hello.proto文件编译生成Golang源文件 hello.pb.go
+源文件中包含消息传递的请求和响应结构。服务端注册对象的方法 创建客户端 以及调用服务端方法

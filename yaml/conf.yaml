@@ -1,0 +1,30 @@
+ipport: 192.168.2.95:10000
+startsendtime: 2017-01-02 08:08:08
+sendmaxcountperday: 100
+devices:
+  - devid: 123456789
+    nodes:
+      - pkid: 0
+        bkid: 0
+        index: 0
+        minvalue: 0
+        maxvalue: 60
+        datatype: normal
+      - pkid: 0
+        bkid: 0
+        index: 0
+        datatype: boolean
+  - devid: 10001
+    nodes:
+      - pkid: 0
+        bkid: 1
+        index: 0
+        datatype: boolean
+warnfrequency: 10
+sendfrequency: 10
+
+sendgifts:
+  - 206
+  - 211
+startTime: 2017-01-02 08:08:08
+endTime: 2017-01-02 08:08:08

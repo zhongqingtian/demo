@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package proto;
+
+import "person.proto";
+// 接口
+service Greeter {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+
+// 接口入参
+message HelloRequest {
+  string name = 1;
+  Person person = 2;
+}
+
+// 接口出参
+message HelloReply {
+  string message = 1;
+}

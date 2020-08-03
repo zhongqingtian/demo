@@ -1,0 +1,3 @@
+time="2019-09-16T09:47:35+08:00" level=info msg="打开文件夹" filename=123.txt
+time="2019-09-16T09:47:35+08:00" level=info msg="Failed to log to file, using default stderr"
+time="2019-09-16T09:47:35+08:00" level=info msg="<nil> fail%!(EXTRA string=出错了)"
