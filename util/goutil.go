@@ -8,7 +8,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"gitlab.xunlei.cn/xllive/pwactweekstar/define"
 	"image"
 	"image/draw"
 	"image/jpeg"
@@ -664,6 +663,8 @@ func GetGuid() string {
 	return GetMd5String(base64.URLEncoding.EncodeToString(b))
 }
 
+var DATESTART = "202006123"
+
 //根据时间， 获取该时间的周一的日期
 func WeekDateByTime(unixTime int64) string {
 	var (
@@ -680,7 +681,7 @@ func WeekDateByTime(unixTime int64) string {
 
 	weekDay := time.Unix(unixTime, 0).Weekday().String()
 	monTime := unixTime - int64((week[weekDay]-1)*24*3600)
-	mTime := time.Unix(monTime, 0).Format(define.DATESTART)
+	mTime := time.Unix(monTime, 0).Format(DATESTART)
 	return mTime
 }
 
@@ -747,6 +748,7 @@ const (
 	sendGiftLogTablePrefix = "pw_gift.t_gift_send_" //送礼记录表
 	sendGiftLogTableName   = "pw_gift.t_gift_log"   // 送礼日志表(新)
 )
+
 // 哈希分表获取
 func getTableName(userID uint64) string {
 	hashID := HashId(int64(userID), 256)
