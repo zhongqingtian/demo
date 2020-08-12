@@ -57,3 +57,7 @@ func TestStopTicker(t *testing.T) {
 func TestSundate(t *testing.T) {
 	Sundate()
 }
+
+func TestParseDate(t *testing.T) {
+	ParseDate()
+}

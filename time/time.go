@@ -119,3 +119,8 @@ func Sundate() {
 	firstDurTime := sunDate.Sub(now)
 	logrus.Warn(firstDurTime)
 }
+
+func ParseDate() {
+	date := time.Date(2020, 10, 21, 12, 12, 10, 0, time.Local)
+	logrus.Print(date.Format("01/02-15:04"))
+}

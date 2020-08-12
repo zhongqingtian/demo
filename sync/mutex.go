@@ -163,3 +163,33 @@ func (df *myDataFile) Wsn() int64 {
 func (df *myDataFile) DataLen() uint32 {
 	return df.dataLen
 }
+
+type MapTest struct {
+	Name string
+	Age  int
+}
+
+func SyncMap() { // 安全支持并发的map
+	var synMap sync.Map
+	synMap.Store("K", "V")
+	for i := 1; i < 10; i++ {
+		map11 := MapTest{
+			Name: "name",
+			Age:  i,
+		}
+		synMap.Store(i, map11)
+	}
+	value, ok := synMap.Load("K") // 取值
+	logrus.Info(value, ok)
+	synMap.Range(func(k, v interface{}) bool {
+		test, ok := v.(MapTest) // 类型断言
+		if ok {
+			logrus.Info(test)
+			logrus.Println("iterate:", k, v.(MapTest))
+		} else {
+			logrus.Info("panic happen v=", v)
+		}
+		return true
+	})
+
+}

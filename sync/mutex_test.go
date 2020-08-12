@@ -39,3 +39,7 @@ func TestNewDataFile(t *testing.T) {
 
 	time.Sleep(10 * time.Second)
 }
+
+func TestSyncMap(t *testing.T) {
+	SyncMap()
+}
