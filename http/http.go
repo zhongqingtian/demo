@@ -1,4 +1,4 @@
-package main;
+package main
 
 import (
 	"fmt"
@@ -13,9 +13,9 @@ func say(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("Hello"))
 }
 func main() {
-	http.HandleFunc("/hello", hello);
-	http.Handle("/handle", http.HandlerFunc(say));
-	http.ListenAndServe(":8001", nil);
+	http.HandleFunc("/hello", hello)
+	http.Handle("/handle", http.HandlerFunc(say))
+	http.ListenAndServe(":8001", nil)
 	fmt.Println(http.TimeFormat)
-	select {}; // 阻塞进程
+	select {} // 阻塞进程
 }

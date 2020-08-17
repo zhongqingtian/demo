@@ -10,3 +10,7 @@ func TestLetterCombinations(t *testing.T) {
 	k := a.(int)
 	t.Log(k)
 }
+
+func TestGenerateParenthesis(t *testing.T) {
+	t.Log(GenerateParenthesis(3))
+}
