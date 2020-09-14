@@ -765,3 +765,12 @@ func HashId(userId int64, max int64) int64 {
 	}
 	return val%max + 1
 }
+
+type De struct {
+	Name string
+}
+
+func CheckMake(rwMutexAddRuleRes *sync.RWMutex) map[string][]*De {
+	res := make(map[string][]*De)
+	return res
+}

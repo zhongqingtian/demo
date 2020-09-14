@@ -18,7 +18,7 @@ type helloService struct{}
 
 //给helloServer添加一个方法
 // 当客户端调用这个方法时 会执行 这个实现的方法体
-func (h helloService) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
+func (h *helloService) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	resp := new(pb.HelloReply)             //创建一个结构体
 	resp.Message = "hello" + in.Name + "." //存储值
 	return resp, nil                       //返回结构体
@@ -29,7 +29,7 @@ var HelloServer = helloService{}
 func main() {
 	//第一步
 	//监听 IP地址 是否进行连接
-	listen, err := net.Listen("tcp", Address)
+	listen, err := net.Listen("tcp", "0.0.0.0:50052")
 	if err != nil {
 		fmt.Printf("failed to listen:%v", err)
 	}
@@ -40,7 +40,7 @@ func main() {
 
 	//第三步
 	//注册helloServer为客户端提供服务，暴漏方法接口
-	pb.RegisterHelloServer(s, HelloServer) //内部调用了s.RegisterServer()
+	pb.RegisterHelloServer(s, &HelloServer) //内部调用了s.RegisterServer()
 	fmt.Println("Listen on" + Address)
 
 	s.Serve(listen)

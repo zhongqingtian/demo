@@ -1,6 +1,7 @@
 package goutil
 
 import (
+	"sync"
 	"testing"
 	"unicode/utf8"
 )
@@ -103,4 +104,13 @@ func TestSessionId(t *testing.T) {
 	t.Log(10 * 1.0 / 3)
 	t.Log(10 / (3 * 1.0))
 	//t.Log(SessionId())
+}
+
+func TestCheckMake(t *testing.T) {
+	rwMutexAddRuleRes := &sync.RWMutex{}
+	t.Log(CheckMake(rwMutexAddRuleRes) == nil)
+
+	t.Log(rwMutexAddRuleRes == nil)
+	//rwMutexAddRuleRes.Lock()
+	t.Log("lock sucess")
 }
