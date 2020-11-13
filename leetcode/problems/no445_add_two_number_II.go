@@ -1,7 +1,5 @@
 package main
 
-import "letcode/problems/ListNode"
-
 /**
 l1 1-2-3-4
 l2 7-8-0

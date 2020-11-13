@@ -1,6 +1,7 @@
 package reflect
 
 import (
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"reflect"
 )
@@ -42,4 +43,14 @@ func TReflect() {
 	controllerType := t.Elem()
 	tag := controllerType.Field(2).Tag //Field(第几个字段,index从0开始)
 	logrus.Info("Tag:", tag)
+}
+
+func GetVarName() {
+	onevar := "something"
+	other := "something else"
+	sa := []string{onevar, other}
+	for _, v := range sa {
+		vName := reflect.ValueOf(v).String()
+		fmt.Println(vName)
+	}
 }

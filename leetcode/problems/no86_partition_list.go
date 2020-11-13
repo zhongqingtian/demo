@@ -1,7 +1,7 @@
 package main
 
 import (
-	"letcode/problems/ListNode"
+	ln "demo/leetcode/problems/ListNode"
 )
 
 func partition(head *ln.ListNode, x int) *ln.ListNode {

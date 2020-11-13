@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"strings"
 )
 
@@ -36,14 +37,15 @@ func (s *sliceValue) String() string {
 
 var showHelp bool
 var k *string
+
 /*
 可执行文件名 -slice="java,go"  最后将输出[java,go]
 可执行文件名 最后将输出[default is me]
 */
 // go run flag.go -config
-func main(){
+func main() {
 	//os.Args
-	var languages []string
+	/*var languages []string
 	flag.Var(newSliceValue([]string{}, &languages), "slice", "I like programming `languages`") // 给变量设置默认值
 	k = flag.String("config","aaa","this is a config")
 	flag.Parse() // 读取 命令参数 调用对应 值
@@ -58,5 +60,27 @@ func main(){
 
 
 	//打印结果slice接收到的值
-	fmt.Println(languages)
+	fmt.Println(languages)*/
+	var (
+		vers *bool
+		help *bool
+		conf *string
+	)
+	vers = flag.Bool("v", true, "display the version.")
+	help = flag.Bool("h", true, "print this help.")
+	conf = flag.String("f", "", "specify configuration file.")
+	flag.Parse()
+
+	if *vers { // 取地址值,地址默认是nil而不是值false
+		fmt.Println("Version:")
+		os.Exit(0)
+	}
+
+	if *help {
+		flag.Usage()
+		os.Exit(0)
+	}
+
+	*conf = "etc/index.local.yml"
+
 }

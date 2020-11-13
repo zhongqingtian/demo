@@ -1,8 +1,8 @@
 package main
 
 import (
+	"demo/leetcode/problems/ListNode"
 	"fmt"
-	"letcode/problems/ListNode"
 )
 
 func numComponents(head *ListNode.ListNode, G []int) int {

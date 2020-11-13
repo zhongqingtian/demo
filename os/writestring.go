@@ -1,4 +1,4 @@
-package main
+package os
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func main() {
+func OsFile2() {
 	file, err := os.Create("./os/magic_msg.txt")
 	if err != nil {
 		fmt.Println(err)

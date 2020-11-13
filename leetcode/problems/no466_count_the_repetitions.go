@@ -143,7 +143,3 @@ func main() {
 // 4
 // "ab"
 // 2
-"baba"
-11
-"baab"
-1

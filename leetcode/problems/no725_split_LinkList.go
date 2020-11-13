@@ -1,8 +1,8 @@
 package main
 
 import (
+	ln "demo/leetcode/problems/ListNode"
 	"fmt"
-	"letcode/problems/ListNode"
 	"math"
 )
 

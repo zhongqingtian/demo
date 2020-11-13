@@ -1,8 +1,8 @@
 package main
 
 import (
-	"letcode/problems/ListNode"
-	"letcode/problems/TreeNode"
+	ln "demo/leetcode/problems/ListNode"
+	tn "demo/leetcode/problems/TreeNode"
 )
 
 func sortedListToBST(head *ln.ListNode) *tn.TreeNode {

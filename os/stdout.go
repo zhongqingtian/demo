@@ -1,4 +1,4 @@
-package main
+package os
 
 import (
 	"fmt"
@@ -6,17 +6,17 @@ import (
 	"time"
 )
 
-func main()  {
-	proverbs := []string {
+func OsStdOut() {
+	proverbs := []string{
 		"Channels orchestrate mutexes serialize\n",
 		"Cgo is not Go\n",
 		"Errors are values\n",
 		"Don't panic\n",
 	}
 
-	for _, p := range proverbs{
+	for _, p := range proverbs {
 		n, err := os.Stdout.Write([]byte(p)) //打印到控制台
-		time.Sleep(1*time.Second)//隔一秒发一次
+		time.Sleep(1 * time.Second)          //隔一秒发一次
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -27,6 +27,5 @@ func main()  {
 			os.Exit(1)
 		}
 	}
-
 
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"runtime"
+	"time"
 )
 
 func say(s string) {
@@ -12,9 +13,27 @@ func say(s string) {
 	}
 }
 
+func Input(key string, mvp map[string]string) {
+	mvp[key] = key
+}
+func OutPut(mvp map[string]string) {
+	for s, s2 := range mvp {
+		fmt.Println(s, s2)
+	}
+}
 func main() {
-	go say("world") //开一个新的Goroutines执行
-	say("hello") //当前Goroutines执行
+	//go say("world") //开一个新的Goroutines执行
+	//say("hello")    //当前Goroutines执行
+	mvp := make(map[string]string)
+	for i := 0; i < 10; i++ {
+		go Input(fmt.Sprintf("%v", i), mvp)
+	}
+	for i := 0; i < 10; i++ {
+		go Input(fmt.Sprintf("%v", i), mvp)
+	}
+	go OutPut(mvp)
+
+	time.Sleep(3 * time.Second)
 }
 
 // 以上程序执行后将输出：

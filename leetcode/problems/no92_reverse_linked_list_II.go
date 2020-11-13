@@ -1,8 +1,8 @@
 package main
 
 import (
+	ln "demo/leetcode/problems/ListNode"
 	"fmt"
-	"letcode/problems/ListNode"
 )
 
 func reverseBetween(head *ln.ListNode, m, n int) *ln.ListNode {

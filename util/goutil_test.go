@@ -114,3 +114,11 @@ func TestCheckMake(t *testing.T) {
 	//rwMutexAddRuleRes.Lock()
 	t.Log("lock sucess")
 }
+
+func TestHashKey(t *testing.T) {
+	t.Log(HashKey(MD5("jjkk/kdj/llj")))
+}
+
+func TestCreateTs(t *testing.T) {
+	CreateTs()
+}

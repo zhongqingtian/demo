@@ -1,7 +1,7 @@
 package main
 
 import (
-	"letcode/problems/ListNode"
+	ln "demo/leetcode/problems/ListNode"
 )
 
 func main() {

@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/dgryski/go-tsz"
 	"image"
 	"image/draw"
 	"image/jpeg"
@@ -15,6 +16,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	rand2 "math/rand"
 	"mime/multipart"
 	"net/http"
 	"net/url"
@@ -773,4 +775,47 @@ type De struct {
 func CheckMake(rwMutexAddRuleRes *sync.RWMutex) map[string][]*De {
 	res := make(map[string][]*De)
 	return res
+}
+
+func MD5(str string) string {
+	hasher := md5.New()
+	io.WriteString(hasher, str)
+	return hex.EncodeToString(hasher.Sum(nil)) //
+}
+
+func HashKey(key string) uint32 {
+	hash := uint32(216613211)
+	const prime32 = uint32(1677555545)
+	for i := 0; i < len(key); i++ {
+		hash *= prime32
+		hash ^= uint32(key[i])
+	}
+	return hash
+}
+
+type Ts struct {
+	ser   tsz.Series // 压缩时序数据
+	Count int8       // 统计数据个数
+}
+
+func CreateTs() {
+	rand2.Seed(121)
+	// 添加数据，压缩数据
+	ts := Ts{
+		Count: 0,
+	}
+	var i int8
+	for i = 20; i > 0; i-- {
+		time.Sleep(10 * time.Millisecond)
+		ts.ser.Push(uint32(time.Now().Unix()), float64(i))
+		ts.Count += 1
+		fmt.Println("t0=", ts.ser.T0)
+	}
+
+	/*----取出数据-----*/
+	iter := ts.ser.Iter()
+	for iter.Next() { // 循环取出 k,v
+		k, v := iter.Values() // 值的坐标 position
+		fmt.Println(k, "---", v)
+	}
 }

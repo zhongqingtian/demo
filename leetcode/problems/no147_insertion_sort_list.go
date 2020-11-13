@@ -1,15 +1,15 @@
 package main
 
 import (
+	ln "demo/leetcode/problems/ListNode"
 	"fmt"
-	"letcode/problems/ListNode"
 )
 
 /*
 好吧 需要确定一点的是，这个问题最好的办法是把链表考入到数组中进行排序，尽管他是占空间的，但是在并发环境下，这么做是危险的
 */
 
-func insertionSortList(head *ln.ListNode) *ln.ListNode {
+func insertionSortList1(head *ln.ListNode) *ln.ListNode {
 	dummy := &ln.ListNode{}
 	dummy.Next = head
 	if head == nil || head.Next == nil {
@@ -45,7 +45,7 @@ func insertionSortList(head *ln.ListNode) *ln.ListNode {
 	return dummy.Next
 }
 
-func insertionSortList(head *ln.ListNode) *ln.ListNode {
+/*func insertionSortList(head *ln.ListNode) *ln.ListNode {
 	if head == nil {
 		return head
 	}
@@ -66,11 +66,11 @@ func insertionSortList(head *ln.ListNode) *ln.ListNode {
 		cur = next
 	}
 	return dummy.Next
-}
+}*/
 
-func main() {
+/*func main() {
 	list := ln.InitFromSlice([]int{4, 2})
 	list = insertionSortList(list)
 	fmt.Println("result")
 	list.Print()
-}
+}*/

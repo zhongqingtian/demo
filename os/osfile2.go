@@ -1,4 +1,4 @@
-package main
+package os
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func main() {
+func IsExist() {
 	file, err := os.Open("./os/proverbs.txt")
 	if err != nil {
 		fmt.Println(err)

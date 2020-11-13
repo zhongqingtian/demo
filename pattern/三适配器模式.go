@@ -31,7 +31,8 @@ func (*ExistPlayer) playWma(fileName string) {
 	logrus.Info("play wma:", fileName)
 }
 
-// 适配器
+/*适配器模式很好的践行了面向对象设计原则里的开闭原则（open/closed principle），新增一个接口时也无需修改老接口，只需多加一个适配层即可*/
+// 适配器 加一层封装旧结构
 type PlayerAdaptor struct {
 	// 持有一个旧接口
 	existPlayer ExistPlayer

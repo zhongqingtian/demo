@@ -1,11 +1,11 @@
-package main
+package os
 
 import (
 	"fmt"
 	"os"
 )
 
-func main()  {
+func OsVar() {
 	// 预定义变量，保存命令行参数
 	fmt.Println(os.Args)
 
@@ -15,8 +15,8 @@ func main()  {
 
 	// 获得全部环境变量
 	env := os.Environ()
-	for k,v := range env{
-		fmt.Println(k,v)
+	for k, v := range env {
+		fmt.Println(k, v)
 	}
 
 	// 终止程序
@@ -26,19 +26,19 @@ func main()  {
 	fmt.Println(os.Getenv("PATH"))
 
 	// 获得当前目录
-	dir,err :=os.Getwd()
-	fmt.Println(dir,err)
+	dir, err := os.Getwd()
+	fmt.Println(dir, err)
 
 	//创建目录
-	err = os.Mkdir(dir+"/new_file",0755)
+	err = os.Mkdir(dir+"/new_file", 0755)
 	fmt.Println(err)
 
 	// 创建目录 包括任何必要的上级目录 可以是多级目录
-	err = os.MkdirAll(dir+"/new/demo",0755)
+	err = os.MkdirAll(dir+"/new/demo", 0755)
 	fmt.Println(err)
 
 	// 删除目录
-	err = os.Remove(dir+"/new_file")
+	err = os.Remove(dir + "/new_file")
 	fmt.Println(err)
 	err = os.RemoveAll(dir + "/new")
 	fmt.Println(err)
