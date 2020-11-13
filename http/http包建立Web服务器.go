@@ -7,6 +7,7 @@ import (
 	_ "net/http/pprof"
 	"strings"
 )
+
 // http.ResponseWriter  *http.Request 参数顺序固定
 // http.ResponseWriter 用于更改返回写入信息 responese的响应
 // *http.Request 获得请求的 指针句柄，操作获取请求页面相关信息
@@ -25,7 +26,7 @@ func sayhelloName1(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/hello", sayhelloName1)       //设置访问的路由
+	http.HandleFunc("/hello", sayhelloName1) //设置访问的路由
 	err := http.ListenAndServe(":9090", nil) //设置监听的端口
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)

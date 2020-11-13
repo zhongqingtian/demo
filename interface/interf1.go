@@ -3,21 +3,21 @@ package main
 import "fmt"
 
 type Human struct {
-	name string
-	age int
+	name  string
+	age   int
 	phone string
 }
 
 type Student struct {
-	Human //匿名字段
+	Human  //匿名字段
 	school string
-	loan float32
+	loan   float32
 }
 
 type Employee struct {
-	Human //匿名字段
+	Human   //匿名字段
 	company string
-	money float32
+	money   float32
 }
 
 //Human实现SayHi方法
@@ -57,11 +57,11 @@ func main() {
 	fmt.Println("This is Mike, a Student:")
 	i.SayHi()
 	i.Sing("November rain")
-	 valu, ok := i.(Human)
-	 fmt.Println(valu)
-	fmt.Println(ok) //判断类型
-	fmt.Printf("%T\n",i) //输出类型
-	 _, ok = i.(Student)
+	valu, ok := i.(Human)
+	fmt.Println(valu)
+	fmt.Println(ok)       //判断类型
+	fmt.Printf("%T\n", i) //输出类型
+	_, ok = i.(Student)
 	fmt.Println(ok)
 	//i也能存储Employee
 	i = tom
@@ -75,7 +75,7 @@ func main() {
 	//这三个都是不同类型的元素，但是他们实现了interface同一个接口
 	x[0], x[1], x[2] = paul, sam, mike
 
-	for _, value := range x{
+	for _, value := range x {
 		value.SayHi()
 	}
 }

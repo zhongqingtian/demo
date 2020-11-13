@@ -1,4 +1,5 @@
 package test
+
 import (
 	"testing"
 )
@@ -13,9 +14,9 @@ func Test_Division_1(t *testing.T) {
 
 func Test_Division_2(t *testing.T) {
 	//t.Error("就是不通过")
-	if _ , e := Division(6,0); e == nil{
+	if _, e := Division(6, 0); e == nil {
 		t.Error("Division did not work as expected")
 	} else {
-		t.Log("one test passed.",e)
+		t.Log("one test passed.", e)
 	}
 }

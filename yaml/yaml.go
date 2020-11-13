@@ -22,7 +22,7 @@ type Yaml struct {
 }
 
 type Yaml1 struct {
-	SQLConf Mysql `yaml:"mysql"`
+	SQLConf   Mysql `yaml:"mysql"`
 	CacheConf Cache `yaml:"cache"`
 }
 
@@ -39,18 +39,18 @@ type Cache struct {
 	List   []string `yaml:"list"`
 }
 
-func MkYaml()  {
+func MkYaml() {
 	conf := new(Yaml)
-	yamlFile,err := ioutil.ReadFile("./yaml/test.yaml")
+	yamlFile, err := ioutil.ReadFile("./yaml/test.yaml")
 
-	log.Println("yamlFile:",yamlFile)
+	log.Println("yamlFile:", yamlFile)
 	if err != nil {
-		log.Printf("yamlFile.Get err #%v",err)
+		log.Printf("yamlFile.Get err #%v", err)
 	}
-	err = yaml.Unmarshal(yamlFile,conf)
+	err = yaml.Unmarshal(yamlFile, conf)
 	if err != nil {
-		log.Fatalf("Unmarshal: %v",err)
+		log.Fatalf("Unmarshal: %v", err)
 	}
-	log.Println("conf",conf)
-	time.Sleep(1*time.Second)
+	log.Println("conf", conf)
+	time.Sleep(1 * time.Second)
 }

@@ -71,7 +71,7 @@ type PromeClient struct {
 
 func NewApiClient() *PromeClient {
 	httpClient, err := api.NewClient(api.Config{
-		Address:      "http://promsre.wps.cn", // 不用指定端口，默认就行
+		Address:      "http://promsre.cn", // 不用指定端口，默认就行
 		RoundTripper: api.DefaultRoundTripper,
 	})
 	if err != nil {
@@ -91,7 +91,7 @@ func (p *PromeClient) Series(str ...string) {
 	ctx := context.Background()
 	start := time.Unix(1604887810, 0)
 	end := start.Add(time.Minute / 2)
-	res, err := p.apiClient.Series(ctx, str, start, end)
+	res, _, err := p.apiClient.Series(ctx, str, start, end)
 	logrus.Info(err)
 	fmt.Println("count=", len(res))
 	for i, re := range res {
@@ -102,7 +102,7 @@ func (p *PromeClient) Series(str ...string) {
 func (p *PromeClient) Query(str string) {
 	ctx := context.Background()
 	st := time.Unix(1604887810, 0)
-	res, err := p.apiClient.Query(ctx, str, st)
+	res, _, err := p.apiClient.Query(ctx, str, st)
 	if err != nil {
 		logrus.Info(err)
 	}

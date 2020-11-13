@@ -7,10 +7,10 @@ func fibonacci1(c, quit chan int) {
 	for {
 		select {
 		case c <- x:
-			x, y = y, x + y
+			x, y = y, x+y
 		case <-quit:
 			fmt.Println("quit")
-			return  //返回中断所有操作
+			return //返回中断所有操作
 		}
 	}
 }

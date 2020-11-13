@@ -4,7 +4,7 @@ import "testing"
 
 func BenchmarkDivision(b *testing.B) {
 	for i := 0; i < b.N; i++ { // use b.N for looping
-				Division(4,5)
+		Division(4, 5)
 	}
 }
 
@@ -15,7 +15,7 @@ func Benchmark_TimeConsumingFunction(b *testing.B) {
 
 	b.StartTimer() //重新开始计时
 	for i := 0; i < b.N; i++ {
-		Division(4,5)
+		Division(4, 5)
 	}
 
 }

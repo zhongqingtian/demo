@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -21,7 +20,7 @@ func main() {
 		fmt.Println(err)
 	}
 	defer conn.Close()
-     //第二步
+	//第二步
 	//初始化客户端
 	c := pb.NewHelloClient(conn)
 
@@ -40,4 +39,3 @@ func main() {
 	fmt.Println(r.Message)
 
 }
-

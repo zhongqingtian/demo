@@ -1,4 +1,5 @@
 package main
+
 import (
 	"container/list"
 	"github.com/astaxie/session"
@@ -27,7 +28,6 @@ func (st *SessionStore) Get(key interface{}) interface{} {
 	} else {
 		return nil
 	}
-	return nil
 }
 
 func (st *SessionStore) Delete(key interface{}) error {

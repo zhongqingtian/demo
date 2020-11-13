@@ -52,11 +52,11 @@ func uploadHandle(w http.ResponseWriter, req *http.Request) {
 
 		// 保存图片
 		os.Mkdir("./uploaded/", 0777)
-		saveFile, err := os.OpenFile("./uploaded/"+handle.Filename, os.O_WRONLY|os.O_CREATE, 0666)//创建文件名
+		saveFile, err := os.OpenFile("./uploaded/"+handle.Filename, os.O_WRONLY|os.O_CREATE, 0666) //创建文件名
 
 		errorHandle(err, w)
 		io.Copy(saveFile, uploadFile) //把图片资源copy到刚刚创建的文件名下面
-	defer uploadFile.Close()
+		defer uploadFile.Close()
 		defer saveFile.Close()
 		// 上传图片成功
 		s := `<html>
@@ -65,8 +65,8 @@ func uploadHandle(w http.ResponseWriter, req *http.Request) {
     </head>
     <body>
         查看上传图片: <a target='_blank' href="/uploaded/`
-		s = s+handle.Filename
-		s = s+`" >`+handle.Filename+`</a> </body>
+		s = s + handle.Filename
+		s = s + `" >` + handle.Filename + `</a> </body>
 </html>`
 		w.Write([]byte(s))
 	}

@@ -31,7 +31,7 @@ func floodFill(image [][]int, sr int, sc int, newColor int) [][]int {
 	for i := 0; i < len(queue); i++ {
 		cell := queue[i]
 		for j := 0; j < 4; j++ {
-			mx, my := cell[0] + dx[j], cell[1] + dy[j]
+			mx, my := cell[0]+dx[j], cell[1]+dy[j]
 			if mx >= 0 && mx < n && my >= 0 && my < m && image[mx][my] == currColor {
 				queue = append(queue, []int{mx, my})
 				image[mx][my] = newColor

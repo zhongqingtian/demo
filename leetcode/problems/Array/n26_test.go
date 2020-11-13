@@ -6,5 +6,5 @@ import (
 )
 
 func TestRemoveDuplicates(t *testing.T) {
-	fmt.Println(RemoveDuplicates([]int{1,1,3,2,21}))
+	fmt.Println(RemoveDuplicates([]int{1, 1, 3, 2, 21}))
 }

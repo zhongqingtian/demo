@@ -12,7 +12,7 @@ func TestValidateMobile(t *testing.T) {
 
 // 性能测试
 func BenchmarkValidateMobile(b *testing.B) {
-	for i := 0;i < b.N ;i++  {
+	for i := 0; i < b.N; i++ {
 		ValidateMobile("130")
 	}
 }

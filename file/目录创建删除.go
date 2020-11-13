@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"os"
 )
+
 //创建和删除文件
-func createAnddelete()  {
+func createAnddelete() {
 	os.Mkdir("./astaxie", 0777)
 	os.MkdirAll("./astaxie/test1/test2", 0777)
 	err := os.Remove("./astaxie")
@@ -16,7 +17,7 @@ func createAnddelete()  {
 }
 
 //打开文件，写文件
-func openandwrite()  {
+func openandwrite() {
 	userFile := "astaxie.txt"
 	fout, err := os.Create(userFile)
 	if err != nil {
@@ -30,6 +31,6 @@ func openandwrite()  {
 	}
 }
 
-func main(){
-   createAnddelete()
+func main() {
+	createAnddelete()
 }

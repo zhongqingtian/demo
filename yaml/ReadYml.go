@@ -14,9 +14,9 @@ type Myconf struct {
 	Devices            []Device `yaml:"devices"`
 	WarnFrequency      int      `yaml:"warnFrequency"`
 	SendFrequency      int      `yaml:"sendFrequency"`
-	sendgifts          []int    `yaml:sendgifts`
-	startTime          string   `yaml:startTime`
-	endTime            string   `yaml:endTime`
+	Sendgifts          []int    `yaml:sendgifts`
+	StartTime          string   `yaml:startTime`
+	EndTime            string   `yaml:endTime`
 }
 type Device struct {
 	DevId string `yaml:"devId"`

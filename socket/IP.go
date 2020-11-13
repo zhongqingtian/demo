@@ -22,5 +22,5 @@ func paseIp() {
 }
 
 func main() {
-  paseIp()
+	paseIp()
 }

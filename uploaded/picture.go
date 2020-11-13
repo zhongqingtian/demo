@@ -1,9 +1,11 @@
 package main
+
 import (
 	"github.com/kataras/iris"
 	"io"
 	"os"
 )
+
 func main() {
 	app := iris.New()
 	app.Post("/upload_image", func(ctx iris.Context) {

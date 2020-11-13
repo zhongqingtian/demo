@@ -422,7 +422,7 @@ func ImageEncodeJPEG(ph string, img image.Image, option int) error {
 	// 保证文件正常关闭
 	defer f.Close()
 	// 写入文件
-	return jpeg.Encode(f, img, &jpeg.Options{option})
+	return jpeg.Encode(f, img, &jpeg.Options{Quality: option})
 }
 
 // PNG将编码生成图片

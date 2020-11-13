@@ -9,19 +9,15 @@ func TestRanktemplate(t *testing.T) {
 }
 
 func TestInRoom(t *testing.T) {
-	InRoom()
 }
 
 func TestOutRoom(t *testing.T) {
-	OutRoom()
 }
 
 func TestSendchat(t *testing.T) {
-	Sendchat()
 }
 
 func TestNotGift(t *testing.T) {
-	NotGift()
 }
 
 func TestPay(t *testing.T) {
@@ -64,7 +60,7 @@ func TestSendGift(t *testing.T) {
 	}*/
 
 	//	SendGift(253746851, 596694974, "1_50095", 12345877, 10, uint64(time.Now().Unix()))
-	NotGift()
+
 }
 
 func TestSendNotGift(t *testing.T) {
