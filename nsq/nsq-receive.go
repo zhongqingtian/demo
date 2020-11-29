@@ -1,5 +1,5 @@
 //Nsq接收测试
-package main
+package nsq
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 type ConsumerT struct{}
 
 // 主函数
-func main() {
+func Receiver() {
 	// 通过 主题 chancel ip地址 创建消费者
 	InitConsumer("test", "test-channel", "10.10.62.33:9151")
 	for {

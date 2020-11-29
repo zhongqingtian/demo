@@ -1,5 +1,5 @@
 //Nsq发送测试
-package main
+package nsq
 
 import (
 	"bufio"
@@ -11,7 +11,7 @@ import (
 var producer *nsq.Producer
 
 // 主函数
-func main() {
+func Sender() {
 	strIP1 := "10.10.62.33:9201"
 	strIP2 := "10.10.62.33:9201"
 	InitProducer(strIP1) //根据Ip1地址产生生产者
