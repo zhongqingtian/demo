@@ -27,7 +27,7 @@ package leetcode
  *     Right *TreeNode
  * }
  */
-// 递归遍历
+// 递归遍历 二叉树的最小深度
 func minDepth(root *TreeNode) int {
 	if root == nil {
 		return 0
