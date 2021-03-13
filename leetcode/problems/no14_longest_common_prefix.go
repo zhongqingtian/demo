@@ -43,6 +43,6 @@ func longestCommonPrefix2(strs []string) string {
 }
 
 // func main() {
-// 	strs := []string{"aa", "a"}
+// 	strs := []str{"aa", "a"}
 // 	fmt.Println(longestCommonPrefix2(strs))
 // }

@@ -67,7 +67,7 @@ func Detail(w http.ResponseWriter, r *http.Request) {
 		w.Write(tjson)
 	}
 	/*	t, _ := template.ParseFiles("./detail.html")
-		t.Execute(w, map[string]interface{}{
+		t.Execute(w, map[str]interface{}{
 			"DataMap": dataMap,
 		})*/
 }

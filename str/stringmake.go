@@ -1,4 +1,4 @@
-package main
+package str
 
 import (
 	"fmt"
@@ -11,6 +11,6 @@ func shsh() {
 	fmt.Println(strings.Contains("seafood", ""))
 }
 
-func main() {
+func Test() {
 	shsh()
 }

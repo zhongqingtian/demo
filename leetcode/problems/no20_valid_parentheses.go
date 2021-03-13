@@ -85,5 +85,5 @@ func isValid2(s string) bool {
 
 // func main() {
 // 	s := "(([]){})"
-// 	fmt.Println("string:", s, " is valid", isValid2(s))
+// 	fmt.Println("str:", s, " is valid", isValid2(s))
 // }

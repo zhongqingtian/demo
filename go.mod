@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
+	github.com/Shopify/sarama v1.19.0
 	github.com/astaxie/session v0.0.0-20130408050157-95d7fe18579c
 	github.com/coreos/bbolt v0.0.0-00010101000000-000000000000 // indirect
 	github.com/coreos/etcd v3.3.25+incompatible // indirect
@@ -17,19 +18,29 @@ require (
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/protobuf v1.4.3
+	github.com/google/go-cmp v0.5.2
+	github.com/google/gops v0.3.14
+	github.com/google/wire v0.4.0 // indirect
+	github.com/gophercloud/gophercloud v0.15.0
+	github.com/huaweicloud/golangsdk v0.0.0-20201228013212-d10065a3dc7f
+	github.com/huaweicloud/huaweicloud-sdk-go v1.0.25 // indirect
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/iris v0.0.2
 	github.com/kataras/iris/v12 v12.1.8 // indirect
+	github.com/kr/pretty v0.2.1 // indirect
 	github.com/lxmgo/config v0.0.0-20180313024057-8db99aca0f7e
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/olivere/elastic/v7 v7.0.22
+	github.com/ouqiang/delay-queue v0.0.0-20171001024610-35d75aee7321 // indirect
 	github.com/prometheus/client_golang v1.8.0
 	github.com/sirupsen/logrus v1.7.0
 	github.com/streadway/amqp v1.0.0
 	github.com/valyala/fasthttp v1.17.0 // indirect
+	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
 	go.etcd.io/etcd v3.3.25+incompatible
+	go.mongodb.org/mongo-driver v1.4.6
 	golang.org/x/crypto v0.0.0-20201112155050-0c6587e931a9
 	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
 	google.golang.org/grpc v1.27.0

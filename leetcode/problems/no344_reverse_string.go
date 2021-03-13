@@ -1,7 +1,7 @@
 package main
 
 /**
-Write a function that takes a string as input and returns the string reversed.
+Write a function that takes a str as input and returns the str reversed.
 
 Example:
 Given s = "hello", return "olleh".

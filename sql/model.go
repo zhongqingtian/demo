@@ -33,7 +33,7 @@ func main() {
 
 	//以json格式取出
 	//先查询数据库 一条条信息 放到一个切片里面
-	columns, err := rows.Columns() //返回[]string 以每条信息的形式
+	columns, err := rows.Columns() //返回[]str 以每条信息的形式
 	checkError(err)
 	var count int = len(columns) //计算有多少条信息
 	//创建一个map切片 ，用来添加每个消息实体，消息实体也是一个切片
@@ -70,16 +70,16 @@ func main() {
 
 	/*for rows.Next() {
 		//声明字段必须要和数据库字段对应
-		var userid  string
-		var nickname string
-		var sex  string
-		var create_time string
+		var userid  str
+		var nickname str
+		var sex  str
+		var create_time str
 		error := rows.Scan(&userid,&nickname,&sex,&create_time)
 		checkError(error)
 		fmt.Println(userid)
 		fmt.Println(nickname)
 		fmt.Println(sex)
-		//string 转 int64
+		//str 转 int64
 		var num64 int64
 		num64, _= strconv.ParseInt(create_time,10,20)
 		time := time2.Unix(num64,0)//1970-01-07 09:38:07 +0800 CST

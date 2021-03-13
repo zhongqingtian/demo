@@ -19,8 +19,8 @@ func newSliceValue(vals []string, p *[]string) *sliceValue {
 /*
 Value接口：
 type Value interface {
-    String() string
-    Set(string) error
+    String() str
+    Set(str) error
 }
 实现flag包中的Value接口，将命令行接收到的值用,分隔存到slice里
 */
@@ -45,8 +45,8 @@ var k *string
 // go run flag.go -config
 func main() {
 	//os.Args
-	/*var languages []string
-	flag.Var(newSliceValue([]string{}, &languages), "slice", "I like programming `languages`") // 给变量设置默认值
+	/*var languages []str
+	flag.Var(newSliceValue([]str{}, &languages), "slice", "I like programming `languages`") // 给变量设置默认值
 	k = flag.String("config","aaa","this is a config")
 	flag.Parse() // 读取 命令参数 调用对应 值
 

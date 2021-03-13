@@ -16,11 +16,11 @@ func TestTime(t *testing.T) {
 	//获取时间戳
 	timestamp := time.Now().Unix() //1504079553
 
-	//时间戳转Time 再转 string
+	//时间戳转Time 再转 str
 	timeNow = time.Unix(timestamp, 0)                  //2017-08-30 16:19:19 +0800 CST
 	timeString = timeNow.Format("2006-01-02 15:04:05") //2015-06-15 08:52:32
 	t.Log(timeString)
-	//string 转 时间戳
+	//str 转 时间戳
 	stringTime := "2017-08-30 16:40:41"
 	loc, _ := time.LoadLocation("Local")
 	the_time, err := time.ParseInLocation("2006-01-02 15:04:05", stringTime, loc)

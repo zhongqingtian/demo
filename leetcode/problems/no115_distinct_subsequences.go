@@ -86,7 +86,8 @@ func numDistinct3(s string, t string) int {
 }
 
 func distinctSubsequences3(state [][]int, start int, compare int, count *int) {
-	list := state[start]	for _, val := range list {
+	list := state[start]
+	for _, val := range list {
 		if val > compare {
 			if start == len(state)-1 {
 				*count++

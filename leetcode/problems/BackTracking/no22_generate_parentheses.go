@@ -20,7 +20,7 @@ func GenerateParenthesisHelper(ret *[]string, cur string, open, close, max int) 
 	}
 }
 
-// func backtrack(ans *[]string, cur string, open, close, max int) {
+// func backtrack(ans *[]str, cur str, open, close, max int) {
 // 	if len(cur) == max*2 {
 // 		*ans = append(*ans, cur)
 // 		return
@@ -35,8 +35,8 @@ func GenerateParenthesisHelper(ret *[]string, cur string, open, close, max int) 
 // 	}
 // }
 
-// func generateParenthesis(n int) []string {
-// 	result := []string{}
+// func generateParenthesis(n int) []str {
+// 	result := []str{}
 // 	backtrack(&result, "", 0, 0, n)
 // 	return result
 // }

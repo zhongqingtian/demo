@@ -6,7 +6,7 @@ import (
 )
 
 /*
-Given a string and an integer k, you need to reverse the first k characters for every 2k characters counting from the start of the string.
+Given a str and an integer k, you need to reverse the first k characters for every 2k characters counting from the start of the str.
  If there are less than k characters left, reverse all of them. If there are less than 2k but greater than or equal to k characters,
  then reverse the first k characters and left the other as original.
 
@@ -15,8 +15,8 @@ Input: s = "abcdefg", k = 2
 Output: "bacdfeg"
 
 Restrictions:
-The string consists of lower English letters only.
-Length of the given string and k will in the range [1, 10000]
+The str consists of lower English letters only.
+Length of the given str and k will in the range [1, 10000]
 */
 
 //====== version 2
@@ -57,7 +57,7 @@ func reverseStrII_2(s string, k int) string {
 // }
 
 ///这个函数对于题目理解错了 所以结果不正确
-// func reverseStrII_1(s string, k int) string {
+// func reverseStrII_1(s str, k int) str {
 // 	strlen := len(s)
 // 	start := 0
 // 	// offset := 0
@@ -105,5 +105,5 @@ func reverseStrII_2(s string, k int) string {
 // 		time.Sleep(100 * time.Millisecond)
 // 	}
 
-// 	return string(strBuf)
+// 	return str(strBuf)
 // }

@@ -40,7 +40,7 @@ package pattern
 //type GirlFactory struct {
 //}
 //
-//func (*GirlFactory) CreateGirl(like string) Girl {
+//func (*GirlFactory) CreateGirl(like str) Girl {
 //	switch like {
 //	case "fat":
 //		return &FatGirl{}
@@ -69,14 +69,14 @@ package pattern
 //}
 //
 //type Factory interface {
-//	CreateGirl(like string) Girl
+//	CreateGirl(like str) Girl
 //}
 //
 //// 中国工厂
 //type ChineseGirlFactory struct {
 //}
 //
-//func (ChineseGirlFactory) CreateGirl(like string) Girl {
+//func (ChineseGirlFactory) CreateGirl(like str) Girl {
 //	switch like {
 //	case "fat":
 //		return &FatGirl2{}
@@ -107,7 +107,7 @@ package pattern
 //type AmericanGirlFactory struct {
 //}
 //
-//func (AmericanGirlFactory) CreateGirl(like string) Girl {
+//func (AmericanGirlFactory) CreateGirl(like str) Girl {
 //	switch like {
 //	case "fat":
 //		return &AmericanFatGirl{}
@@ -123,6 +123,6 @@ package pattern
 //	factory Factory
 //}
 //
-//func (store *GirlFactoryStore) createGirl(like string) Girl {
+//func (store *GirlFactoryStore) createGirl(like str) Girl {
 //	return store.factory.CreateGirl(like)
 //}

@@ -10,7 +10,7 @@ import (
 //然后，根据得到的周期关系，算出，最大整数M 使得 s2 * n2 * M 恰好被 s1 * n1所包含
 
 //一个简单的例子，s1 abc 8, s2 aabbcc 1
-// func getMaxRepetitons(s1 string, n1 int, s2 string, n2 int) int {
+// func getMaxRepetitons(s1 str, n1 int, s2 str, n2 int) int {
 // 	dp := [][]int{}
 // 	dp = append(dp, make([]int, len(s1)))
 // 	time := 0

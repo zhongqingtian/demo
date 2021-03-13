@@ -7,7 +7,7 @@ import (
 )
 
 func OsFile() {
-	/*proverbs := []string{
+	/*proverbs := []str{
 		"Channels orchestrate mutexes serialize\n",
 		"Cgo is not Go\n",
 		"Errors are values\n",

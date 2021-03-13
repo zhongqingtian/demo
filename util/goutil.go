@@ -43,7 +43,7 @@ func NoError(err error) {
 // --------------------------------- //
 // a2b
 
-// string to float
+// str to float
 func String2Float(data string, reData float64) float64 {
 	i, err := strconv.ParseFloat(data, 64)
 	if err != nil {
@@ -52,7 +52,7 @@ func String2Float(data string, reData float64) float64 {
 	return i
 }
 
-// string to int
+// str to int
 func String2Int(s string, dft int) int {
 	var re, err = strconv.Atoi(s)
 	if err != nil {
@@ -61,7 +61,7 @@ func String2Int(s string, dft int) int {
 	return re
 }
 
-// string to int64
+// str to int64
 func String2Int64(s string, dft int64) int64 {
 	var re, err = strconv.ParseInt(s, 10, 64)
 	if err != nil {
@@ -70,7 +70,7 @@ func String2Int64(s string, dft int64) int64 {
 	return re
 }
 
-// string to utf8
+// str to utf8
 func String2Utf8(_str string) string {
 	var utf string
 	b := []byte(_str)
@@ -82,7 +82,7 @@ func String2Utf8(_str string) string {
 	return utf
 }
 
-// string to bool
+// str to bool
 func String2Bool(_str string) bool {
 	str := strings.TrimSpace(strings.ToLower(_str))
 	if str == "true" {
@@ -99,7 +99,7 @@ func String2Bool(_str string) bool {
 }
 
 // --------------------------------- //
-// string
+// str
 
 // 是不是空字符
 func IsSpace(c byte) bool {
@@ -138,17 +138,17 @@ func UnixMsSec(off int) int64 {
 }
 
 // 获得当前系统日期
-//const FORMAT_DATE string = "2006-01-02"
-//const FORMAT_TIME string = "15:04:05"
-//const FORMAT_DATE_TIME string = "2006-01-02 15:04:05"
+//const FORMAT_DATE str = "2006-01-02"
+//const FORMAT_TIME str = "15:04:05"
+//const FORMAT_DATE_TIME str = "2006-01-02 15:04:05"
 func GetTime(layout string) string {
 	return time.Now().Format(layout)
 }
 
 // 解析日期
-//const FORMAT_DATE string = "2006-01-02"
-//const FORMAT_TIME string = "15:04:05"
-//const FORMAT_DATE_TIME string = "2006-01-02 15:04:05"
+//const FORMAT_DATE str = "2006-01-02"
+//const FORMAT_TIME str = "15:04:05"
+//const FORMAT_DATE_TIME str = "2006-01-02 15:04:05"
 func ParseTime(layout, value string) time.Time {
 	t, err := time.Parse(layout, value)
 	if err != nil {
@@ -715,7 +715,7 @@ func GetOrderId(mapStrI map[string]interface{}) string {
 		strV := fmt.Sprintf("%v", v)
 		//字符串值不能为空
 		if strV == "" {
-			//	log.Warnf("[GetOrderId] key:[%s] value:[%+v] to string is empty", k, v)
+			//	log.Warnf("[GetOrderId] key:[%s] value:[%+v] to str is empty", k, v)
 		}
 		mapStrStr[k] = strV
 	}

@@ -29,7 +29,7 @@ func unknow() {
 
 	/* 现在f接口被赋值 是下面一整个结构，但是我们不知道怎样
 	  通过类型断言来取出
-	f = map[string]interface{}{
+	f = map[str]interface{}{
 		"Name": "Wednesday",
 		"Age":  6,
 		"Parents": []interface{}{
@@ -48,7 +48,7 @@ func unknow() {
 	for k, v := range m { //迭代出 m 的value还是interface 所以还要类型断言一次
 		switch vv := v.(type) { //type 获取类型
 		case string:
-			fmt.Println(k, "is string", vv)
+			fmt.Println(k, "is str", vv)
 		case int:
 			fmt.Println(k, "is int", vv)
 		case float64:

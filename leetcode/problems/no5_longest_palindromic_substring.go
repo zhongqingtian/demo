@@ -73,7 +73,7 @@ func longestCommonSubstr(str1 []byte, str2 []byte) string {
 
 	str1Len := len(str1)
 	str2Len := len(str2)
-	// ret := make(map[string]int)
+	// ret := make(map[str]int)
 	arrayMap := make([][]int, str1Len)
 	ret2 := ""
 	for i := 0; i < str1Len; i++ {
@@ -92,9 +92,9 @@ func longestCommonSubstr(str1 []byte, str2 []byte) string {
 				if arrayMap[i][j] > z {
 					z = arrayMap[i][j]
 					ret2 = string(str1[i-z+1 : i+1])
-					// ret[string(str1[i-z+1:i+1])]++
+					// ret[str(str1[i-z+1:i+1])]++
 				} else if arrayMap[i][j] == z {
-					// ret[string(str1[i-z+1:i+1])]++
+					// ret[str(str1[i-z+1:i+1])]++
 					ret2 = string(str1[i-z+1 : i+1])
 				}
 			} else {

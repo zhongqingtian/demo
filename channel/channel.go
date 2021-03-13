@@ -48,10 +48,12 @@ func block() {
 }
 
 func ChanLen() (int, int, int) {
-	ch := make(chan int, 1)
+	ch := make(chan int, 100)
 	l1 := len(ch)
 	ch <- 1
 	l2 := len(ch)
+	c := cap(ch)
+	fmt.Println(c)
 	close(ch)
 	l3 := len(ch)
 	return l1, l2, l3
