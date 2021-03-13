@@ -73,3 +73,12 @@ func TestMaxProduct(t *testing.T) {
 func TestMaximumProduct(t *testing.T) {
 	fmt.Println(MaximumProduct([]int{1, 2, 3, 4}))
 }
+
+func TestNextPermutation(t *testing.T) {
+	a :=[]int{3,2,1}
+	NextPermutation(a)
+	fmt.Println(a)
+}
+func TestTrap(t *testing.T) {
+	fmt.Println(Trap([]int{4,2,3}))
+}
