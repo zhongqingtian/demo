@@ -90,7 +90,7 @@ func reverse(a []int) {
 输入：height = [4,2,0,3,2,5]
 输出：9
 */
-func Trap(height []int) int {  // 双指针
+func Trap(height []int) int { // 双指针
 	if len(height) < 0 {
 		return 0
 	}

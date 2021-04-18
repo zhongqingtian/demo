@@ -75,10 +75,10 @@ func TestMaximumProduct(t *testing.T) {
 }
 
 func TestNextPermutation(t *testing.T) {
-	a :=[]int{3,2,1}
+	a := []int{3, 2, 1}
 	NextPermutation(a)
 	fmt.Println(a)
 }
 func TestTrap(t *testing.T) {
-	fmt.Println(Trap([]int{4,2,3}))
+	fmt.Println(Trap([]int{4, 2, 3}))
 }
