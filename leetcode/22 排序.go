@@ -40,7 +40,6 @@ func merge(intervals [][]int) [][]int {
 	return merged
 }
 
-
 // 排序链表
 //
 //给你链表的头结点 head ，请将其按 升序 排列并返回 排序后的链表 。
@@ -55,9 +54,9 @@ func sortList(head *ListNode) *ListNode {
 		slow = slow.Next      // 慢指针走一步
 		fast = fast.Next.Next // 快指针走两步
 	}
-	preSlow.Next = nil  // 断开，分成两链
-	l := sortList(head) // 已排序的左链
-	r := sortList(slow) // 已排序的右链
+	preSlow.Next = nil     // 断开，分成两链
+	l := sortList(head)    // 已排序的左链
+	r := sortList(slow)    // 已排序的右链
 	return mergeList(l, r) // 合并已排序的左右链，一层层向上返回
 }
 
@@ -65,7 +64,7 @@ func mergeList(l1, l2 *ListNode) *ListNode {
 	dummy := &ListNode{Val: 0}   // 虚拟头结点
 	prev := dummy                // 用prev去扫，先指向dummy
 	for l1 != nil && l2 != nil { // l1 l2 都存在
-		if l1.Val < l2.Val {   // l1值较小
+		if l1.Val < l2.Val { // l1值较小
 			prev.Next = l1 // prev.Next指向l1
 			l1 = l1.Next   // 考察l1的下一个结点
 		} else {
@@ -74,7 +73,7 @@ func mergeList(l1, l2 *ListNode) *ListNode {
 		}
 		prev = prev.Next // prev.Next确定了，prev指针推进
 	}
-	if l1 != nil {    // l1存在，l2不存在，让prev.Next指向l1
+	if l1 != nil { // l1存在，l2不存在，让prev.Next指向l1
 		prev.Next = l1
 	}
 	if l2 != nil {
@@ -82,6 +81,7 @@ func mergeList(l1, l2 *ListNode) *ListNode {
 	}
 	return dummy.Next // 真实头结点
 }
+
 /*
 时间复杂度是 O(nlogn)
 空间复杂度是 O(logn)
@@ -105,3 +105,78 @@ func mergeList(l1, l2 *ListNode) *ListNode {
 	return l1
 }
 */
+
+/*
+152 乘积最大子数组
+给你一个整数数组 nums ，请你找出数组中乘积最大的连续子数组（该子数组中至少包含一个数字）
+，并返回该子数组所对应的乘积。
+*/
+
+func maxProduct(nums []int) int {
+	if len(nums) == 0 {
+		return 0
+	}
+	if len(nums) == 1 {
+		return nums[0]
+	}
+
+	maxF := make([]int, len(nums)-1)
+	minF := make([]int, len(nums)-1)
+	var max = nums[0]
+	for i := 1; i < len(nums); i++ {
+		maxF[i] = max3(maxF[i]*nums[i], minF[i]*nums[i], nums[i])
+		minF[i] = min3(maxF[i]*nums[i], minF[i]*nums[i], nums[i])
+		if minF[i] > max {
+			max = minF[i]
+		}
+	}
+	return max
+}
+
+/*
+找数组中第k个最大的值
+*/
+func findKthLargest(nums []int, k int) int {
+	left := 0
+	right := len(nums) - 1
+
+	for {
+		if left >= right {
+			return nums[left]
+		}
+		p := partition(nums, left, right)
+		if p+1 == k {
+			return nums[p]
+		} else if p+1 < k {
+			left = p + 1
+		} else {
+			right = p - 1
+		}
+	}
+}
+
+func partition(nums []int, left int, right int) int {
+	privo := nums[right]
+	for i := left; i < right; i++ {
+		if nums[i] > privo {
+			nums[left], nums[i] = nums[i], nums[left]
+			left++
+		}
+	}
+	nums[left], nums[right] = nums[right], nums[left]
+	return left
+}
+/*
+289 移动零
+给定一个数组 nums，编写一个函数将所有 0 移动到数组的末尾，同时保持非零元素的相对顺序。
+*/
+func moveZeroes(nums []int) {
+	left, right, n := 0, 0, len(nums)
+	for right < n {
+		if nums[right] != 0 {
+			nums[left], nums[right] = nums[right], nums[left]
+			left++
+		}
+		right++
+	}
+}
