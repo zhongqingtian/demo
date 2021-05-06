@@ -765,7 +765,7 @@ func FindSlice() {
 				bson.M{"jobName": "work13"},
 			}},
 	}
-	filter := bson.D{}
+	//filter := bson.D{}
 	filter = append(filter, es...)
 	//	filter := bson.D{{"_id", bson.M{"$in": ids}}}
 	//options := &options.FindOptions{Sort: bson.M{"age":1}}

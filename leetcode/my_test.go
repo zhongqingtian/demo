@@ -14,3 +14,12 @@ func TestLetterCombinations(t *testing.T) {
 func TestGenerateParenthesis(t *testing.T) {
 	t.Log(GenerateParenthesis(3))
 }
+
+func TestIncreasingBST(t *testing.T) {
+	node := &TreeNode{Val: 10, Left: &TreeNode{Val: 2}, Right: &TreeNode{Val: 20, Left: &TreeNode{Val: 15}}}
+	res := IncreasingBST(node)
+	for res != nil {
+		t.Log(res.Val)
+		res = res.Right
+	}
+}
