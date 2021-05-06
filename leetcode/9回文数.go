@@ -35,3 +35,33 @@ func IsPalindrome(x int) bool {
 
 	return true
 }
+
+/*
+最长回文子串
+给你一个字符串 s，找到 s 中最长的回文子串。ababac  => ababa
+*/
+func longestPalindrome(s string) string {
+	length := len(s)
+	dp := make([][]bool, length)
+	start := 0
+	maxLen := 1
+	for r := 0; r < length; r++ {
+		dp[r] = make([]bool, length)
+		dp[r][r] = true
+		for l := 0; l < r; l++ {
+			if (s[l] == s[r]) && (r-l <= 2 || dp[l+1][r-1]) {
+				dp[l][r] = true
+			} else {
+				dp[l][r] =false
+			}
+			if dp[l][r] {
+                curLen := r -l + 1
+                if curLen>maxLen{
+                	start = l
+                	maxLen = curLen
+				}
+			}
+		}
+	}
+	return s[start:start+maxLen]
+}
