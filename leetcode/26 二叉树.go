@@ -58,7 +58,7 @@ func inorderTraversal(root *TreeNode) []int {
 	return res
 }
 
-/*后序遍历*/
+/*前序遍历*/
 func preorderTraversal(root *TreeNode) []int {
 	var res []int
 	var stack []*TreeNode
