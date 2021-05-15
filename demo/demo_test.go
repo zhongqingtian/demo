@@ -23,3 +23,7 @@ func TestForSelect(t *testing.T) {
 func TestName(t *testing.T) {
 	FixBug()
 }
+
+func TestGoRun(t *testing.T) {
+	GoRun()
+}
