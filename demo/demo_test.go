@@ -1,6 +1,8 @@
 package demo
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestGetPerm(t *testing.T) {
 	t.Log(GetPerm())
@@ -21,5 +23,19 @@ func TestForSelect(t *testing.T) {
 }
 
 func TestName(t *testing.T) {
-	FixBug()
+	// 	FixBug()
+	/*str := "kk21"
+	t.Log(strings.Split(str, ","))*/
+
+	 m := make(map[int]int)
+	// m[0]=0
+	t.Log(len(m))
+}
+
+func TestEGroup(t *testing.T) {
+	EGroup()
+}
+
+func TestSyncWait(t *testing.T) {
+	SyncWait()
 }

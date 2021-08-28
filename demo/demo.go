@@ -2,8 +2,11 @@ package demo
 
 import (
 	"fmt"
+	"golang.org/x/sync/errgroup"
 	"io/ioutil"
 	"math/rand"
+	"sync"
+
 	"time"
 )
 
@@ -53,4 +56,74 @@ func FixBug() {
 
 		fmt.Println(star, rate)
 	}
+}
+
+func IoWriter()  {
+	// os.Stderr =
+}
+
+
+type ErrGroup struct {
+	group errgroup.Group
+}
+
+func NewErrGroup() ErrGroup {
+	return ErrGroup{group: errgroup.Group{}}
+}
+
+func (e *ErrGroup) Go(f func() error) {
+	e.group.Go(func() (err error) {
+		defer func() {
+			if x := recover(); x != nil {
+				err = fmt.Errorf("recover:%+v", x)
+			}
+		}()
+		return f()
+	})
+}
+
+func (e *ErrGroup) Wait() error {
+	return e.group.Wait()
+}
+
+func EGroup()  {
+	go func() {
+		g := NewErrGroup()
+		g.Go(func() error {
+			panic("xxxxxxxxxxxxxxxxxxxxxx")
+			return nil
+		})
+
+		if err := g.Wait(); err != nil {
+			fmt.Println(err)
+			return
+		}
+	}()
+
+	time.Sleep(time.Second * 1)
+	fmt.Println("主程正常...")
+	time.Sleep(time.Second * 5)
+	fmt.Println("安全退出...")
+}
+
+type User struct {
+	User string
+}
+type SS struct {
+	List []*User
+}
+func SyncWait()  {
+	wg := sync.WaitGroup{}
+	fmt.Println("start")
+	wg.Wait()
+	fmt.Println("end")
+
+	ss := SS{}
+	users := make([]*User,0)
+	users = append(users, &User{
+		User: "张三",
+	})
+
+	ss.List = append(users,ss.List...)
+	fmt.Println(ss)
 }
