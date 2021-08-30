@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func RouterP(routerKey, msg string) {
+func RouterP(exchangeName, routerKey, msg string) {
 	conn, err := amqp.Dial("amqp://admin:admin@localhost:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -16,21 +16,21 @@ func RouterP(routerKey, msg string) {
 	defer ch.Close()
 
 	err = ch.ExchangeDeclare(
-		"logs_direct", // name
-		"direct",      // type
-		true,          // durable
-		false,         // auto-deleted
-		false,         // internal
-		false,         // no-wait
-		nil,           // arguments
+		exchangeName, // name
+		"direct",     // type
+		true,         // durable
+		false,        // auto-deleted
+		false,        // internal
+		false,        // no-wait
+		nil,          // arguments
 	)
 	failOnError(err, "Failed to declare an exchange")
 
 	err = ch.Publish(
-		"logs_direct", // exchange
-		routerKey,     // routing key
-		false,         // mandatory
-		false,         // immediate
+		exchangeName, // exchange
+		routerKey,    // routing key
+		false,        // mandatory
+		false,        // immediate
 		amqp.Publishing{
 			ContentType: "text/plain",
 			Body:        []byte(msg),
@@ -39,7 +39,7 @@ func RouterP(routerKey, msg string) {
 	log.Printf(" routerKey= %s,[x] Sent %s", routerKey, msg)
 }
 
-func RunRouterConsumer(routerKeys []string) {
+func RunRouterConsumer(exchangeName, queueName string, routerKeys []string) {
 	conn, err := amqp.Dial("amqp://admin:admin@localhost:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -49,21 +49,21 @@ func RunRouterConsumer(routerKeys []string) {
 	defer ch.Close()
 
 	err = ch.ExchangeDeclare(
-		"logs_direct", // name
-		"direct",      // type
-		true,          // durable
-		false,         // auto-deleted
-		false,         // internal
-		false,         // no-wait
-		nil,           // arguments
+		exchangeName, // name
+		"direct",     // type
+		true,         // durable
+		false,        // auto-deleted
+		false,        // internal
+		false,        // no-wait
+		nil,          // arguments
 	)
 	failOnError(err, "Failed to declare an exchange")
 
 	q, err := ch.QueueDeclare(
-		"",    // name
+		queueName,    // name
 		false, // durable
 		false, // delete when usused
-		true,  // exclusive
+		false,  // exclusive
 		false, // no-wait
 		nil,   // arguments
 	)

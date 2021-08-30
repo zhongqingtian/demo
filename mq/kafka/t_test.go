@@ -22,13 +22,23 @@ func TestConsumer2(t *testing.T) {
 }
 
 // 消费者组 多个pod之间有负载作用，不重复消费，不重复
-func TestConsumerGroup1(t *testing.T) {
+
+func TestConsumerGroupA1(t *testing.T) {
 	ConsumerGroup("web_log", "AA")
 }
 
-func TestConsumerGroup2(t *testing.T) {
+func TestConsumerGroupA2(t *testing.T) {
 	ConsumerGroup("web_log", "AA")
 }
-func TestConsumerGroup3(t *testing.T) {
-	ConsumerGroup("web_log", "AA")
+// 多个组，起到订阅发布一对多作用
+func TestConsumerGroupB1(t *testing.T) {
+	ConsumerGroup("web_log", "BB")
+}
+
+func TestConsumerGroupB2(t *testing.T) {
+	ConsumerGroup("web_log", "BB")
+}
+
+func TestConsumerGroupB3(t *testing.T) {
+	ConsumerGroup("web_log", "BB")
 }

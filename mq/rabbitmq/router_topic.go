@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func TopicP(routerKey, msg string) {
+func TopicP(exchangeName, routerKey, msg string) {
 	conn, err := amqp.Dial("amqp://admin:admin@localhost:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -15,7 +15,7 @@ func TopicP(routerKey, msg string) {
 	defer ch.Close()
 
 	err = ch.ExchangeDeclare(
-		"logs_topic", // name
+		exchangeName, // name
 		"topic",      // type
 		true,         // durable
 		false,        // auto-deleted
@@ -26,21 +26,21 @@ func TopicP(routerKey, msg string) {
 	failOnError(err, "Failed to declare an exchange")
 
 	err = ch.Publish(
-		"logs_topic", // exchange
+		exchangeName, // exchange
 		routerKey,    // routing key
 		false,        // mandatory
 		false,        // immediate
 		amqp.Publishing{
 			DeliveryMode: 2,
-			ContentType: "text/plain",
-			Body:        []byte(msg),
+			ContentType:  "text/plain",
+			Body:         []byte(msg),
 		})
 	failOnError(err, "Failed to publish a message")
 
 	log.Printf(" routerKey=%s [x] Sent %s", routerKey, msg)
 }
 
-func RunTopicConsumer(routerKeys []string) {
+func RunTopicConsumer(exchangeName, queueName string, routerKeys []string) {
 	conn, err := amqp.Dial("amqp://admin:admin@localhost:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -50,7 +50,7 @@ func RunTopicConsumer(routerKeys []string) {
 	defer ch.Close()
 
 	err = ch.ExchangeDeclare(
-		"logs_topic", // name
+		exchangeName, // name
 		"topic",      // type
 		true,         // durable
 		false,        // auto-deleted
@@ -61,18 +61,18 @@ func RunTopicConsumer(routerKeys []string) {
 	failOnError(err, "Failed to declare an exchange")
 
 	q, err := ch.QueueDeclare(
-		"queue1",    // name
-		true, // durable
-		false, // delete when usused
-		true,  // exclusive
-		false, // no-wait
-		nil,   // arguments
+		queueName, // name
+		true,      // durable
+		false,     // delete when usused
+		false,     // exclusive
+		false,     // no-wait
+		nil,       // arguments
 	)
 	failOnError(err, "Failed to declare a queue")
 
 	for _, s := range routerKeys {
 		log.Printf("Binding queue %s to exchange %s with routing key %s",
-			q.Name, "logs_topic", s)
+			q.Name, exchangeName, s)
 		err = ch.QueueBind(
 			q.Name,       // queue name
 			s,            // routing key
@@ -83,13 +83,13 @@ func RunTopicConsumer(routerKeys []string) {
 	}
 
 	msgs, err := ch.Consume(
-		q.Name, // queue
-		"zhangsan",     // consumer
-		false,   // auto ack
-		false,  // exclusive
-		false,  // no local
-		false,  // no wait
-		nil,    // args
+		q.Name,     // queue
+		"zhangsan", // consumer
+		false,      // auto ack
+		false,      // exclusive
+		false,      // no local
+		false,      // no wait
+		nil,        // args
 	)
 	failOnError(err, "Failed to register a consumer")
 

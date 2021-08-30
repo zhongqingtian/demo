@@ -10,7 +10,7 @@ import (
 var producer *nsq.Producer
 
 // 主函数
-func Sender(topic string) {
+func Sender(topic, msg string) {
 	strIP1 := "127.0.0.1:4150" //4150 是tcp 端口 4151 是http 端口  curl -d 'hello world 1' 'http://127.0.0.1:4151/put?topic=test'
 	strIP2 := "127.0.0.1:4150"
 	InitProducer(strIP1) //根据Ip1地址产生生产者
@@ -34,14 +34,10 @@ func Sender(topic string) {
 		}
 	}*/
 	//推送 默认 “test”的topic 和消息内容
-	m := "[%d]hello work"
-	for i := 0; i < 10; i++ {
-		msg := fmt.Sprintf(m, i)
-		for err := Publish(topic, msg); err != nil; err = Publish(topic, msg) {
-			//切换IP重连
-			strIP1, strIP2 = strIP2, strIP1
-			InitProducer(strIP1)
-		}
+	for err := Publish(topic, msg); err != nil; err = Publish(topic, msg) {
+		//切换IP重连
+		strIP1, strIP2 = strIP2, strIP1
+		InitProducer(strIP1)
 	}
 
 	//关闭

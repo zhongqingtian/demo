@@ -12,15 +12,14 @@ import (
 type ConsumerT struct{}
 
 // 主函数
-func Receiver(topic,ch string) {
+func Receiver(topic, ch string) {
 	// 通过 主题 chancel ip地址 创建消费者
-	InitConsumer(topic,ch) // http
+	InitConsumer(topic, ch) // http
 	time.Sleep(10 * time.Minute)
 }
 
 //处理消息 实现 handle接口里面的方法 处理消息内容 这个方法名和参数不可修改
 func (*ConsumerT) HandleMessage(msg *nsq.Message) error {
-	log.Println(111)
 	log.Println("receive", msg.NSQDAddress, "message:", string(msg.Body))
 	return nil
 }

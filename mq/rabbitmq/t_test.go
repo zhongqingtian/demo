@@ -9,9 +9,8 @@ import (
 // 消费者 重启后会把未确认的消息退给其他同组消费者，或者自己重启完，退给自己
 func TestRunProducer(t *testing.T) {
 	for i := 0; i < 20; i++ {
-		msg := fmt.Sprintf("Hello World! %d", i)
-		RunProducer(msg)
-		// time.Sleep(1*time.Second)
+		msg := fmt.Sprintf("[%d] Hello World! ", i)
+		RunProducer("hello", msg)
 	}
 }
 
@@ -51,46 +50,52 @@ func TestRunExchangeConsumer2(t *testing.T) {
 func TestRouterP(t *testing.T) { // 一个消息属于多个 routerKey，要发多次
 	routerKey := "warn"
 	for i := 0; i < 5; i++ {
-		msg := fmt.Sprintf("%s=! %d", routerKey, i)
-		RouterP(routerKey, msg)
+		msg := fmt.Sprintf("[%d] %s=!", i, routerKey)
+		RouterP("logs_direct", routerKey, msg)
 		// time.Sleep(1*time.Second)
 	}
 	routerKey = "err"
 	for i := 0; i < 5; i++ {
-		msg := fmt.Sprintf("%s=! %d", routerKey, i)
-		RouterP(routerKey, msg)
+		msg := fmt.Sprintf("[%d] %s=!", i, routerKey)
+		RouterP("logs_direct", routerKey, msg)
 		// time.Sleep(1*time.Second)
 	}
 	routerKey = "info"
 	for i := 0; i < 5; i++ {
-		msg := fmt.Sprintf("%s=! %d", routerKey, i)
-		RouterP(routerKey, msg)
+		msg := fmt.Sprintf("[%d] %s=!", i, routerKey)
+		RouterP("logs_direct", routerKey, msg)
 		// time.Sleep(1*time.Second)
 	}
 }
 
+// 相同服务 多个节点（pod）会竞争一个队列消息
 func TestRunRouterConsumer1(t *testing.T) {
 	routerKeys := []string{"warn", "err"}
-	RunRouterConsumer(routerKeys)
+	RunRouterConsumer("logs_direct", "q111", routerKeys)
 }
 
+func TestRunRouterConsumer11(t *testing.T) {
+	routerKeys := []string{"warn", "err"}
+	RunRouterConsumer("logs_direct", "q111", routerKeys)
+}
+
+// 不同队列订阅发布 起到一对多广播作用
 func TestRunRouterConsumer2(t *testing.T) {
 	routerKeys := []string{"warn"}
-	RunRouterConsumer(routerKeys)
+	RunRouterConsumer("logs_direct", "q222", routerKeys)
 }
 
 func TestRunRouterConsumer3(t *testing.T) {
-	routerKeys := []string{"warn"}
-	RunRouterConsumer(routerKeys)
+	routerKeys := []string{"info", "err"}
+	RunRouterConsumer("logs_direct", "q333", routerKeys)
 }
 
 // 四 topic
-
 func TestTopicP1(t *testing.T) {
 	routerKey := "quick.orange.rabbit"
 	for i := 0; i < 5; i++ {
 		msg := fmt.Sprintf("%s=! %d", routerKey, i)
-		TopicP(routerKey, msg)
+		TopicP("logs_direct", routerKey, msg)
 		// time.Sleep(1*time.Second)
 	}
 }
@@ -98,15 +103,20 @@ func TestTopicP1(t *testing.T) {
 func TestTopicP2(t *testing.T) {
 	routerKey := "lazy.orange.elephant"
 	for i := 0; i < 5; i++ {
-		msg := fmt.Sprintf("%s=! %d", routerKey, i)
-		TopicP(routerKey, msg)
+		msg := fmt.Sprintf("[%d] %s=! ", i, routerKey)
+		TopicP("logs_topic", routerKey, msg)
 		// time.Sleep(1*time.Second)
 	}
 }
 
-func TestRunTopicConsumer(t *testing.T) {
+func TestRunTopicConsumer1(t *testing.T) {
 	routerKeys := []string{"*.orange.*"}
-	RunTopicConsumer(routerKeys)
+	RunTopicConsumer("logs_topic","queue444",routerKeys)
+}
+
+func TestRunTopicConsumer2(t *testing.T) {
+	routerKeys := []string{"*.orange.*"}
+	RunTopicConsumer("logs_topic","queue444",routerKeys)
 }
 
 // 死信队列
