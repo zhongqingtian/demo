@@ -4,10 +4,12 @@ import (
 	"github.com/streadway/amqp"
 	"log"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 )
 
-func RunExchangeP(body string) {
+func RunExchangeP(exchangeName, body string) {
 	conn, err := amqp.Dial("amqp://admin:admin@localhost:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -17,13 +19,13 @@ func RunExchangeP(body string) {
 	defer ch.Close()
 
 	err = ch.ExchangeDeclare(
-		"logs",   // name
-		"fanout", // type
-		true,     // durable
-		false,    // auto-deleted
-		false,    // internal
-		false,    // no-wait
-		nil,      // arguments
+		exchangeName, // name
+		"fanout",     // type
+		true,         // durable
+		false,        // auto-deleted
+		false,        // internal
+		false,        // no-wait
+		nil,          // arguments
 	)
 	failOnError(err, "Failed to declare an exchange")
 
@@ -52,7 +54,7 @@ func bodyFrom(args []string) string {
 	return s
 }
 
-func RunExchangeConsumer(forever chan bool, queueName string) {
+func RunExchangeConsumer(exchangeName, queueName, consumerName string) {
 	conn, err := amqp.Dial("amqp://admin:admin@localhost:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -62,13 +64,13 @@ func RunExchangeConsumer(forever chan bool, queueName string) {
 	defer ch.Close()
 
 	err = ch.ExchangeDeclare(
-		"logs",   // name
-		"fanout", // type
-		true,     // durable
-		false,    // auto-deleted
-		false,    // internal
-		false,    // no-wait
-		nil,      // arguments
+		exchangeName, // name
+		"fanout",     // type
+		true,         // durable
+		false,        // auto-deleted
+		false,        // internal
+		false,        // no-wait
+		nil,          // arguments
 	)
 	failOnError(err, "Failed to declare an exchange")
 
@@ -76,29 +78,29 @@ func RunExchangeConsumer(forever chan bool, queueName string) {
 		queueName, // name
 		false,     // durable
 		false,     // delete when usused
-		true,      // exclusive
+		false,     // exclusive 只对首次声明它的连接（Connection）可见,会在其连接断开的时候自动删除。
 		false,     // no-wait
 		nil,       // arguments
 	)
 	failOnError(err, "Failed to declare a queue")
 
 	err = ch.QueueBind(
-		q.Name, // queue name
-		"",     // routing key
-		"logs", // exchange
+		q.Name,       // queue name
+		"",           // routing key
+		exchangeName, // exchange
 		false,
 		nil,
 	)
 	failOnError(err, "Failed to bind a queue")
 
 	msgs, err := ch.Consume(
-		q.Name, // queue
-		"",     // consumer
-		false,  // auto-ack
-		false,  // exclusive
-		false,  // no-local
-		false,  // no-wait
-		nil,    // args
+		q.Name,       // queue
+		consumerName, // consumer
+		false,        // auto-ack
+		false,        // exclusive
+		false,        // no-local
+		false,        // no-wait
+		nil,          // args
 	)
 	failOnError(err, "Failed to register a consumer")
 
@@ -109,6 +111,11 @@ func RunExchangeConsumer(forever chan bool, queueName string) {
 		}
 	}()
 
-	log.Printf(" [*] Waiting for logs. To exit press CTRL+C")
-	<-forever
+	sigterm := make(chan os.Signal, 1)
+	signal.Notify(sigterm, syscall.SIGINT, syscall.SIGTERM)
+	select {
+	case <-sigterm:
+		log.Println("terminating: via signal")
+	}
+	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
 }

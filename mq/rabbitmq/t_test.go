@@ -3,10 +3,10 @@ package rabbitmq
 import (
 	"fmt"
 	"testing"
-	"time"
 )
 
-// 默认queue 多个pod 可以消费同一个queue 轮询
+// 默认queue 多个pod 可以消费同一个queue 轮询,不同消费者名 组成消费组
+// 消费者 重启后会把未确认的消息退给其他同组消费者，或者自己重启完，退给自己
 func TestRunProducer(t *testing.T) {
 	for i := 0; i < 20; i++ {
 		msg := fmt.Sprintf("Hello World! %d", i)
@@ -16,44 +16,35 @@ func TestRunProducer(t *testing.T) {
 }
 
 func TestRunConsumer1(t *testing.T) {
-	ch := make(chan bool)
-	RunConsumer(ch)
-
-	time.Sleep(2 * time.Minute)
-	ch <- true
+	RunConsumer("hello", "consumer")
 }
 
 func TestRunConsumer2(t *testing.T) {
-	ch := make(chan bool)
-	RunConsumer(ch)
-
-	time.Sleep(2 * time.Minute)
-	ch <- true
+	RunConsumer("hello", "consumer")
 }
+
+func TestRunConsumer3(t *testing.T) {
+	RunConsumer("hello", "consumer3")
+}
+
+// ------------------
 
 // fanout
 func TestRunExchangeP(t *testing.T) {
 	for i := 0; i < 20; i++ {
 		msg := fmt.Sprintf("Hello World! %d", i)
-		RunExchangeP(msg)
+		RunExchangeP("logs", msg)
 		// time.Sleep(1*time.Second)
 	}
 }
 
-func TestRunExchangeConsumer(t *testing.T) {
-	forever := make(chan bool)
-	queueName := "q1"
-	RunExchangeConsumer(forever, queueName)
-	time.Sleep(2 * time.Minute)
-	forever <- true
+// 多个pod 可以轮询消费 同一个队列，竞争关系
+func TestRunExchangeConsumer1(t *testing.T) {
+	RunExchangeConsumer("logs", "q1", "consumer")
 }
 
 func TestRunExchangeConsumer2(t *testing.T) {
-	forever := make(chan bool)
-	queueName := "q2" // 不能在相同交换机里面 重复注册队列名
-	RunExchangeConsumer(forever, queueName)
-	time.Sleep(2 * time.Minute)
-	forever <- true
+	RunExchangeConsumer("logs", "q1", "consumer")
 }
 
 // router key direct
@@ -120,9 +111,17 @@ func TestRunTopicConsumer(t *testing.T) {
 
 // 死信队列
 func TestRunDlxP(t *testing.T) {
-	RunDlxP()
+	m := "hello [%d]"
+	for i := 0; i < 5; i++ {
+		msg := fmt.Sprintf(m, i)
+		ProducerDlx("long_abc", msg)
+	}
 }
 
-func TestDxlConsumer(t *testing.T) {
-	DxlConsumer()
+func TestConsumer(t *testing.T) {
+	Consumer("long_abc", "dlx_exchange")
+}
+
+func TestConsumerDlx(t *testing.T) {
+	ConsumerDlx("dlx_exchange", "dlx_queue")
 }
