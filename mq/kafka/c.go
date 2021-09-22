@@ -40,7 +40,7 @@ func Consumer(topic string) {
 		}(pc)
 	}
 
-	time.Sleep(10*time.Minute)
+	time.Sleep(10 * time.Minute)
 }
 
 ///     ///
@@ -57,20 +57,21 @@ type Kafka struct {
 	channelBufferSize int
 }
 
-func NewKafka(topics,group string) *Kafka {
+func NewKafka(topics, group string) *Kafka {
 	return &Kafka{
-		brokers:           brokers,
-		topics:            []string{
+		brokers: brokers,
+		topics: []string{
 			topics,
 		},
 		group:             group,
 		channelBufferSize: 2,
 		ready:             make(chan bool),
-		version:"1.1.1",
+		version:           "1.1.1",
 	}
 }
 
 var brokers = []string{"127.0.0.1:9092"}
+
 // var topics = "web_log"
 // var group = "39"
 
@@ -84,8 +85,8 @@ func (p *Kafka) Init() func() {
 	config := sarama.NewConfig()
 	config.Version = version
 	config.Consumer.Group.Rebalance.Strategy = sarama.BalanceStrategyRange // 分区分配策略
-	config.Consumer.Offsets.Initial = -2                    // 未找到组消费位移的时候从哪边开始消费
-	config.ChannelBufferSize = p.channelBufferSize // channel长度
+	config.Consumer.Offsets.Initial = -2                                   // 未找到组消费位移的时候从哪边开始消费
+	config.ChannelBufferSize = p.channelBufferSize                         // channel长度
 
 	ctx, cancel := context.WithCancel(context.Background())
 	client, err := sarama.NewConsumerGroup(p.brokers, p.group, config)
@@ -125,8 +126,6 @@ func (p *Kafka) Init() func() {
 	}
 }
 
-
-
 // Setup is run at the beginning of a new session, before ConsumeClaim
 func (p *Kafka) Setup(sarama.ConsumerGroupSession) error {
 	// Mark the consumer as ready
@@ -149,17 +148,22 @@ func (p *Kafka) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.C
 	// 具体消费消息
 	for message := range claim.Messages() {
 		msg := string(message.Value)
-		log.Printf("msg: %s", msg)
 		// time.Sleep(time.Second)
 		//run.Run(msg)
 		// 更新位移
-		session.MarkMessage(message, "")
+		if msg == "1" || msg == "2" || msg == "3" {
+			log.Printf("未确认 msg: [%s]", msg)
+		//	session.MarkOffset(message.Topic,message.Partition,message.Offset,"")
+		} else {
+			session.MarkMessage(message, "")
+			log.Printf("成功 msg: [%s]", msg)
+		}
 	}
 	return nil
 }
 
-func ConsumerGroup(topics,group string)  {
-	k := NewKafka(topics,group)
+func ConsumerGroup(topics, group string) {
+	k := NewKafka(topics, group)
 	f := k.Init()
 
 	sigterm := make(chan os.Signal, 1)

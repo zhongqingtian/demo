@@ -90,12 +90,6 @@ func GetMeta(wg *sync.WaitGroup, ids []int64, metaMap map[int64]Meta) error {
 			//// todo
 		}
 	}()
-	defer func() {
-		err := recover()
-		if err != nil {
-			//// todo
-		}
-	}()
 	// do something
 	time.Sleep(50 * time.Millisecond)
 	metaMap[1] = Meta{Name: "zhang"}

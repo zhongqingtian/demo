@@ -100,6 +100,7 @@ func RunRouterConsumer(exchangeName, queueName string, routerKeys []string) {
 	defer close(forever)
 	go func() {
 		for d := range msgs {
+			d.Reject(true)
 			log.Printf(" [x] %s", d.Body)
 		}
 	}()

@@ -7,7 +7,7 @@ import (
 
 func TestProductMsg(t *testing.T) {
 	for i := 0; i < 10; i++ {
-		msg := fmt.Sprintf("hello %d", i)
+		msg := fmt.Sprintf("%d", i)
 		ProductMsg("web_log", msg)
 	}
 }

@@ -9,7 +9,7 @@ import (
 // 消费者 重启后会把未确认的消息退给其他同组消费者，或者自己重启完，退给自己
 func TestRunProducer(t *testing.T) {
 	for i := 0; i < 20; i++ {
-		msg := fmt.Sprintf("[%d] Hello World! ", i)
+		msg := fmt.Sprintf("%d", i)
 		RunProducer("hello", msg)
 	}
 }
