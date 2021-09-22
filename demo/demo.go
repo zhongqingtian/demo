@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/rand"
+	"sync"
 	"time"
 )
 
@@ -53,4 +54,33 @@ func FixBug() {
 
 		fmt.Println(star, rate)
 	}
+}
+
+func GoRun()  {
+	wg := sync.WaitGroup{}
+	type De struct {
+		A string
+		B int
+	}
+	m := make(map[string]*De)
+	m["a"] = &De{
+		A: "a1",
+		B: 1,
+	}
+	m["b"] = &De{
+		A: "b2",
+		B: 2,
+	}
+	m["c"] = &De{
+		A: "c2",
+		B: 2,
+	}
+	for _, de := range m {
+		wg.Add(1)
+		go func(de *De,wg *sync.WaitGroup) {
+			defer wg.Done()
+			fmt.Println(*de)
+		}(de,&wg)
+	}
+	wg.Wait()
 }
