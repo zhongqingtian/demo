@@ -1,6 +1,9 @@
 package demo
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestGetPerm(t *testing.T) {
 	t.Log(GetPerm())
@@ -22,4 +25,38 @@ func TestForSelect(t *testing.T) {
 
 func TestName(t *testing.T) {
 	FixBug()
+}
+
+func TestFixBug(t *testing.T) {
+	/*ll := []string{"kkk", "1111"}
+	var s string*/
+	 data := struct {
+		 Name string
+		 Age int64
+	 }{}
+	 data.Age = 10
+	 data.Name = "11"
+	 da := data
+	 fmt.Println(da)
+	/*go func() {
+		for {
+			n := rand.Int()
+			s = ll[n%2]
+		}
+	}()
+
+	for {
+		go func(ss string) {
+			/*defer func() {
+				if err := recover(); err != nil {
+					buf := make([]byte, 1024)
+					buf = buf[:runtime.Stack(buf, true)]
+					t.Log(buf)
+				}
+			}()*/
+			// fmt.Println(fmt.Sprintf("%P",s))
+		/*	_ = []byte(ss)
+		}(s)
+	}*/
+
 }

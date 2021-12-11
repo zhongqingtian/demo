@@ -24,4 +24,5 @@ func main() {
 		}
 		fmt.Println(n, string(p[:n]))
 	}
+
 }
