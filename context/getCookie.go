@@ -8,26 +8,26 @@ import (
 )
 
 type Header struct {
-	//request_uri string
-	//version         string
-	//server          string
-	//method          string
-	//opaque          string
-	//username   string
-	//password   string
+	//request_uri str
+	//version         str
+	//server          str
+	//method          str
+	//opaque          str
+	//username   str
+	//password   str
 	//password_set bool
-	//host            string
-	//path            string
-	//raw_path         string
-	//force_query      string
-	//raw_query        string
-	//fragment        string
-	//remote_addr      string
+	//host            str
+	//path            str
+	//raw_path         str
+	//force_query      str
+	//raw_query        str
+	//fragment        str
+	//remote_addr      str
 	//is_form_http bool
 	ctx context.Context
 
 	headers map[string]string
-	//trailers map[string]string
+	//trailers map[str]str
 	cookies map[string]string
 	md      metadata.MD
 }

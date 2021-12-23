@@ -17,13 +17,13 @@ func LoadCfg() {
 	logrus.Info("port = ", result)
 
 	str1 := config.String("host")
-	// result is string "act.wiki"
+	// result is str "act.wiki"
 	if err != nil {
 		logrus.Info(err)
 	}
 	logrus.Info("host = ", str1)
 	str2 := config.String("mysql::host") // 读取指定匹配的规则
-	// result is string "127.0.0.1"
+	// result is str "127.0.0.1"
 	if err != nil {
 		logrus.Info(err)
 	}

@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"sort"
+	"strings"
 )
 
 //声明常量及枚举
@@ -86,7 +88,7 @@ func main() {
 	fmt.Println(http.ErrAbortHandler)
 
 	//数组声明
-	var arr [4]string //声明一个4个元素的数组，存储类型为字符串
+	var arr [4]string //声明一个4个元verifyBranch素的数组，存储类型为字符串
 	arr[0] = "kidfidfdfs"
 	arr[1] = "hdhdhhddemo"
 	n := [...]int{4, 5, 6}
@@ -115,4 +117,22 @@ func main() {
 	bSlice = aSlice[0:5] // 对slice的slice可以在cap范围内扩展，此时bSlice包含：d,e,f,g,h
 	bSlice = aSlice[:]   // bSlice包含所有aSlice的元素: d,e,f,g
 	fmt.Println(bSlice)
+
+	verifyBranch := make([]string, 0)
+	verifyBranch = append(verifyBranch, "master")
+	verifyBranch = append(verifyBranch, "beta")
+	sort.Strings(verifyBranch)
+	branch := "dev1"
+	i := sort.SearchStrings(verifyBranch, branch)
+	fmt.Println(i)
+	ss := "master"
+	s := "master"
+	in := strings.Index(ss, s)
+	fmt.Println(in)
+
+	a := true
+	b := false
+	c := false
+
+	fmt.Println(a || b && c)
 }

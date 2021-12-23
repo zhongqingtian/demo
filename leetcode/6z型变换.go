@@ -14,7 +14,7 @@ E   D   H   N
 
 请你实现这个将字符串进行指定行数变换的函数：
 
-string convert(string s, int numRows);
+str convert(str s, int numRows);
 示例 1:
 
 输入: s = "LEETCODEISHIRING", numRows = 3

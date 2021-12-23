@@ -78,7 +78,7 @@ func ParseTableScanners(files []string) ([]string, []TableNameFileScanner) {
 
 //_____________
 // 传入的 files 包含哪些字段 就表示要 获得查询哪些字段返回地址 如上 &d.StartTime，&d.Long
-// 左边是返回 cols 是要操作的字段 []string
+// 左边是返回 cols 是要操作的字段 []str
 // 结果 [id start_time] 0xc0000544e0（地址）
 func (r *TableName) Scans(files ...string) ([]string, []interface{}) {
 	cols, scanners := ParseTableScanners(files)

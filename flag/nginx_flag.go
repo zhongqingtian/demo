@@ -41,7 +41,7 @@ func init() {
 	// 另一种绑定方式
 	q = flag.Bool("q", false, "suppress non-error messages during configuration testing")
 
-	// 注意 `signal`。默认是 -s string，有了 `signal` 之后，变为 -s signal
+	// 注意 `signal`。默认是 -s str，有了 `signal` 之后，变为 -s signal
 	flag.StringVar(&s, "s", "", "send `signal` to a master process: stop, quit, reopen, reload")
 	flag.StringVar(&p, "p", "/user/local/nginx", "set `prefix` path")
 	flag.StringVar(&c, "c", "conf/nginx.conf", "set configuration `file`")

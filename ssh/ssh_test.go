@@ -83,7 +83,7 @@ o2qXoJZ3JaLzFjNNIhkhC15WntgJ/VOjPo7jX49xTRrYM7pq7HCIcXBQCw6LJc+T
 	}
 	//public := ssh.MarshalAuthorizedKey(publicKey)
 	//fmt.Println("公钥:")
-	//fmt.Println(string(public))
+	//fmt.Println(str(public))
 	f := ssh.FingerprintLegacyMD5(publicKey)
 	fmt.Println(f)
 }

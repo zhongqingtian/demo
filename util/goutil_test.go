@@ -91,7 +91,7 @@ func TestGetGuid(t *testing.T) {
 }
 
 func TestSessionId(t *testing.T) {
-	/*ma := make(map[int]string)
+	/*ma := make(map[int]str)
 	ma[1] = "1"
 	ll, ok := ma[1]
 	kk := ma[2]
