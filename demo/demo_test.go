@@ -60,3 +60,7 @@ func TestFixBug(t *testing.T) {
 	}*/
 
 }
+
+func TestGoRun(t *testing.T) {
+	GoRun()
+}

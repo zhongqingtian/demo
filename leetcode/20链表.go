@@ -63,6 +63,11 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 	return nil
 }
 
+/*
+160 相交链表
+编写一个程序，找到两个单链表相交的起始节点。
+*/
+// 相同做法
 // 两个链表的第一个公共节点
 /*
 解题思路：
@@ -72,7 +77,6 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 */
 func getIntersectionNode2(headA, headB *ListNode) *ListNode {
 	node1, node2 := headA, headB
-
 	for node1 != node2 {
 		if node1 == nil {
 			node1 = headB
@@ -86,4 +90,64 @@ func getIntersectionNode2(headA, headB *ListNode) *ListNode {
 		}
 	}
 	return node1
+}
+
+/*
+148  排序链表
+给你链表的头结点 head ，请将其按 升序 排列并返回 排序后的链表 。
+*/
+func sortList2(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	var preSlow *ListNode
+	f, s := head, head
+	for f != nil && f.Next != nil {
+		preSlow = s
+		f, s = f.Next.Next, s.Next
+	}
+	// 找到中点，分开两个链表
+	preSlow.Next = nil
+	l := sortList(head)
+	r := sortList(s)
+	return mergeList2(l, r)
+}
+
+func mergeList2(l, r *ListNode) *ListNode {
+	dummy := &ListNode{Val: 0}
+	pre := dummy
+	for l != nil {
+		if l.Val < r.Val {
+			pre.Next = l
+			l = l.Next
+		} else {
+			pre.Next = r
+			r = r.Next
+		}
+		pre = pre.Next
+	}
+	if l == nil {
+		pre.Next = r
+	}
+	if r == nil {
+		pre.Next = l
+	}
+	return dummy.Next
+}
+
+/*
+反转链表
+给你单链表的头节点 head ，请你反转链表，并返回反转后的链表。
+*/
+
+func reverseList(head *ListNode) *ListNode {
+	var pre *ListNode
+	cur := head
+	for cur!=nil {
+		next := cur.Next
+		cur.Next = pre
+		pre = cur
+		cur = next
+	}
+	return pre
 }

@@ -75,10 +75,29 @@ func TestMaximumProduct(t *testing.T) {
 }
 
 func TestNextPermutation(t *testing.T) {
-	a :=[]int{3,2,1}
+	a := []int{3, 2, 1}
 	NextPermutation(a)
 	fmt.Println(a)
 }
 func TestTrap(t *testing.T) {
-	fmt.Println(Trap([]int{4,2,3}))
+	fmt.Println(Trap([]int{4, 2, 3}))
 }
+
+func TestTt(t *testing.T)  {
+	var list []int
+	var m = make(map[string]string)
+
+	list = append(list, 1)
+	list = append(list, 2)
+	list = append(list, 3)
+	m["key"] = "jj"
+	m["key1"] = "jj"
+	m["key2"] = "jj"
+	t.Log(cap(list))
+	t.Log(len(m))
+	a := []int{2: 1}
+	t.Log(a)
+}
+
+
+
