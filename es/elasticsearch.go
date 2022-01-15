@@ -18,7 +18,7 @@ type Person struct {
 }
 
 func EsClient() {
-	client, err := elastic.NewClient(elastic.SetURL("http://127.0.0.1:9200"))
+	client, err := elastic.NewClient(elastic.SetSniff(false),elastic.SetURL("http://127.0.0.1:9200"))
 	if err != nil {
 		// Handle error
 		panic(err)
@@ -100,7 +100,7 @@ const mapping = `
 func init() {
 	errorlog := logrus.New()
 	var err error
-	client, err = elastic.NewClient(elastic.SetErrorLog(errorlog), elastic.SetURL(host))
+	client, err = elastic.NewClient(elastic.SetSniff(false),elastic.SetErrorLog(errorlog), elastic.SetURL(host))
 	if err != nil {
 		panic(err)
 	}

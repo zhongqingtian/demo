@@ -4,8 +4,8 @@ go 1.13
 
 require (
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
-	github.com/Shopify/sarama v1.19.0
 	github.com/Braveheart7854/rabbitmqPool v1.1.2
+	github.com/Shopify/sarama v1.19.0
 	github.com/astaxie/session v0.0.0-20130408050157-95d7fe18579c
 	github.com/coreos/etcd v3.3.25+incompatible // indirect
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf // indirect
@@ -15,15 +15,14 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-sql-driver/mysql v1.5.0
-	github.com/golang/protobuf v1.4.3
-	github.com/google/go-cmp v0.5.2
-	github.com/google/gops v0.3.14
-	github.com/google/wire v0.4.0 // indirect
-	github.com/gophercloud/gophercloud v0.15.0
-	github.com/huaweicloud/golangsdk v0.0.0-20201228013212-d10065a3dc7f
-	github.com/huaweicloud/huaweicloud-sdk-go v1.0.25 // indirect
 	github.com/go-xman/go.emoji v0.1.2
 	github.com/golang/protobuf v1.5.2
+	github.com/google/go-cmp v0.5.5
+	github.com/google/gops v0.3.14
+	github.com/google/wire v0.4.0 // indirect
+	github.com/gophercloud/gophercloud v0.15.0 // indirect
+	github.com/huaweicloud/golangsdk v0.0.0-20201228013212-d10065a3dc7f // indirect
+	github.com/huaweicloud/huaweicloud-sdk-go v1.0.25 // indirect
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/iris v0.0.2
 	github.com/kataras/iris/v12 v12.1.8 // indirect
