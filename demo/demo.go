@@ -155,3 +155,13 @@ func GoRun()  {
 	}
 	wg.Wait()
 }
+
+type SS struct {
+  Name string
+}
+
+func (s SS)GetName()string  {
+	return  s.Name
+}
+
+
