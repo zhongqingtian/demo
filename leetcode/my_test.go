@@ -5,6 +5,10 @@ import (
 	"testing"
 )
 
+func TestTopList_Swap(t *testing.T) {
+	lengthOfLongestSubstring("abcabcbb")
+}
+
 func TestLetterCombinations(t *testing.T) {
 	//t.Log(LetterCombinations("23"))
 	// t.Log(FindKthLargest([]int{3, 2, 1, 5, 6, 4}, 5))
