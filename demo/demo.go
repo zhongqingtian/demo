@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"sync"
-
 	"time"
 )
 
@@ -112,18 +111,47 @@ type User struct {
 type SS struct {
 	List []*User
 }
-func SyncWait()  {
+func SyncWait() {
 	wg := sync.WaitGroup{}
 	fmt.Println("start")
 	wg.Wait()
 	fmt.Println("end")
 
 	ss := SS{}
-	users := make([]*User,0)
+	users := make([]*User, 0)
 	users = append(users, &User{
 		User: "张三",
 	})
 
-	ss.List = append(users,ss.List...)
+	ss.List = append(users, ss.List...)
 	fmt.Println(ss)
+}
+
+func GoRun()  {
+	wg := sync.WaitGroup{}
+	type De struct {
+		A string
+		B int
+	}
+	m := make(map[string]*De)
+	m["a"] = &De{
+		A: "a1",
+		B: 1,
+	}
+	m["b"] = &De{
+		A: "b2",
+		B: 2,
+	}
+	m["c"] = &De{
+		A: "c2",
+		B: 2,
+	}
+	for _, de := range m {
+		wg.Add(1)
+		go func(de *De,wg *sync.WaitGroup) {
+			defer wg.Done()
+			fmt.Println(*de)
+		}(de,&wg)
+	}
+	wg.Wait()
 }

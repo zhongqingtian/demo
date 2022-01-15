@@ -39,3 +39,7 @@ func TestEGroup(t *testing.T) {
 func TestSyncWait(t *testing.T) {
 	SyncWait()
 }
+
+func TestGoRun(t *testing.T) {
+	GoRun()
+}

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/golang/protobuf/proto"
 )
 
 // 主函数
