@@ -1,9 +1,10 @@
-// Copyright 2019 The Prometheus Authors
+// Copyright 2015 The etcd Authors
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// http://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -11,19 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// +build go1.12
+package types
 
-package prometheus
+// Uint64Slice implements sort interface
+type Uint64Slice []uint64
 
-import "runtime/debug"
-
-// readBuildInfo is a wrapper around debug.ReadBuildInfo for Go 1.12+.
-func readBuildInfo() (path, version, sum string) {
-	path, version, sum = "unknown", "unknown", "unknown"
-	if bi, ok := debug.ReadBuildInfo(); ok {
-		path = bi.Main.Path
-		version = bi.Main.Version
-		sum = bi.Main.Sum
-	}
-	return
-}
+func (p Uint64Slice) Len() int           { return len(p) }
+func (p Uint64Slice) Less(i, j int) bool { return p[i] < p[j] }
+func (p Uint64Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }

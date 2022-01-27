@@ -57,10 +57,9 @@ func FixBug() {
 	}
 }
 
-func IoWriter()  {
+func IoWriter() {
 	// os.Stderr =
 }
-
 
 type ErrGroup struct {
 	group errgroup.Group
@@ -85,7 +84,7 @@ func (e *ErrGroup) Wait() error {
 	return e.group.Wait()
 }
 
-func EGroup()  {
+func EGroup() {
 	go func() {
 		g := NewErrGroup()
 		g.Go(func() error {
@@ -111,6 +110,7 @@ type User struct {
 type SS struct {
 	List []*User
 }
+
 func SyncWait() {
 	wg := sync.WaitGroup{}
 	fmt.Println("start")
@@ -127,7 +127,7 @@ func SyncWait() {
 	fmt.Println(ss)
 }
 
-func GoRun()  {
+func GoRun() {
 	wg := sync.WaitGroup{}
 	type De struct {
 		A string
@@ -148,10 +148,37 @@ func GoRun()  {
 	}
 	for _, de := range m {
 		wg.Add(1)
-		go func(de *De,wg *sync.WaitGroup) {
+		go func(de *De, wg *sync.WaitGroup) {
 			defer wg.Done()
 			fmt.Println(*de)
-		}(de,&wg)
+		}(de, &wg)
 	}
 	wg.Wait()
+}
+
+func SyncMap() {
+	sy := sync.Map{}
+	for i := 0; i < 200; i++ {
+		key := fmt.Sprintf("key%d", i)
+		v := fmt.Sprintf("value%d", i)
+		sy.Store(key, v)
+	}
+
+	v, ok := sy.Load("key88")
+	if !ok {
+		return
+	}
+	fmt.Println(v)
+	f := func(key, val interface{}) bool {
+		if key == "key88" {
+		// 	time.Sleep(5 * time.Second)
+			fmt.Println(key)
+			return true
+		}
+		return false
+	}
+
+	sy.Range(f)
+	time.Sleep(10 * time.Second)
+	fmt.Println("end")
 }

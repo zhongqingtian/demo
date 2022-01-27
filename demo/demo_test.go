@@ -43,3 +43,7 @@ func TestSyncWait(t *testing.T) {
 func TestGoRun(t *testing.T) {
 	GoRun()
 }
+
+func TestSyncMap(t *testing.T) {
+	SyncMap()
+}
