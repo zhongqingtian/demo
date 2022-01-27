@@ -14,7 +14,7 @@ type ListNode struct {
 	Next *ListNode
 }
 
-func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+/*func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 	if l1 == nil && l2 == nil {
 		return nil
 	}
@@ -37,6 +37,36 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 		return &ListNode{
 			Val:  sum - 10,
 			Next: addTwoNumbers(nextNode, tempNode),
+		}
+	}
+}*/
+
+func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+	if l1==nil&&l2==nil{
+		return nil
+	}
+	if l1==nil{
+		return l2
+	}
+	if l2 == nil {
+		return l1
+	}
+	nextNode := addTwoNumbers(l1.Next,l2.Next)
+
+	sum := l1.Val + l2.Val
+	if sum>10 {
+		tempNode := &ListNode{
+			Val:  1,
+			Next: nil,
+		}
+		return &ListNode{
+			Val:  sum - 10,
+			Next: addTwoNumbers(tempNode, nextNode),
+		}
+	} else {
+		return &ListNode{
+			Val:  sum,
+			Next: nextNode,
 		}
 	}
 }

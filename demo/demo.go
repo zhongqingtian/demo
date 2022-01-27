@@ -109,6 +109,7 @@ type User struct {
 }
 type SS struct {
 	List []*User
+	Name string
 }
 
 func SyncWait() {
@@ -156,6 +157,7 @@ func GoRun() {
 	wg.Wait()
 }
 
+
 func SyncMap() {
 	sy := sync.Map{}
 	for i := 0; i < 200; i++ {
@@ -182,3 +184,9 @@ func SyncMap() {
 	time.Sleep(10 * time.Second)
 	fmt.Println("end")
 }
+
+
+func (s SS)GetName()string  {
+	return  s.Name
+}
+
