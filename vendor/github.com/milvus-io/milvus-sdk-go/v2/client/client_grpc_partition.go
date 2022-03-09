@@ -106,7 +106,7 @@ func (c *grpcClient) HasPartition(ctx context.Context, collName string, partitio
 	return resp.GetValue(), nil
 }
 
-// ShowPartitions list all paritions from collection
+// ShowPartitions list all partitions from collection
 func (c *grpcClient) ShowPartitions(ctx context.Context, collName string) ([]*entity.Partition, error) {
 	if c.service == nil {
 		return []*entity.Partition{}, ErrClientNotReady
@@ -123,8 +123,16 @@ func (c *grpcClient) ShowPartitions(ctx context.Context, collName string) ([]*en
 		return []*entity.Partition{}, err
 	}
 	partitions := make([]*entity.Partition, 0, len(resp.GetPartitionIDs()))
+	if len(resp.GetPartitionNames()) == 0 {
+		return []*entity.Partition{}, errors.New("length of PartitionNames")
+	}
 	for idx, partitionID := range resp.GetPartitionIDs() {
-		partitions = append(partitions, &entity.Partition{ID: partitionID, Name: resp.GetPartitionNames()[idx]})
+		partition := &entity.Partition{ID: partitionID, Name: resp.GetPartitionNames()[idx]}
+		if len(resp.GetInMemoryPercentages()) > idx {
+			partition.Loaded = resp.GetInMemoryPercentages()[idx] == 100
+		}
+
+		partitions = append(partitions, partition)
 	}
 	return partitions, nil
 }
@@ -171,31 +179,34 @@ func (c *grpcClient) LoadPartitions(ctx context.Context, collName string, partit
 	}
 
 	if !async {
-		segments, _ := c.GetPersistentSegmentInfo(ctx, collName)
-		target := make(map[int64]*entity.Segment)
-		for _, segment := range segments {
-			if segment.NumRows == 0 {
-				continue
+		for {
+			select {
+			case <-ctx.Done():
+				return errors.New("context deadline exceeded")
+			default:
 			}
-			if _, has := ids[segment.ParititionID]; !has {
-				// segment not belongs to partition
-				continue
+			partitions, err := c.ShowPartitions(ctx, collName)
+			if err != nil {
+				return err
 			}
-			target[segment.ID] = segment
-		}
-		for len(target) > 0 {
-			current, err := c.GetQuerySegmentInfo(ctx, collName)
-			if err == nil {
-				for _, segment := range current {
-					ts, has := target[segment.ID]
-					if has {
-						if segment.NumRows >= ts.NumRows {
-							delete(target, segment.ID)
-						}
-					}
+			foundLoading := false
+			loaded := 0
+			for _, partition := range partitions {
+				if _, has := ids[partition.ID]; !has {
+					continue
 				}
+				if !partition.Loaded {
+					//Not loaded
+					foundLoading = true
+					break
+				}
+				loaded++
 			}
-			time.Sleep(time.Millisecond * 100)
+			if foundLoading || loaded < len(partitionNames) {
+				time.Sleep(time.Millisecond * 100)
+				continue
+			}
+			break
 		}
 	}
 

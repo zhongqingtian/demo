@@ -16,6 +16,11 @@ import (
 	"github.com/milvus-io/milvus-sdk-go/v2/internal/proto/schema"
 )
 
+const (
+	// TYPE_PARAM_DIM is the const for field type param dimension
+	TYPE_PARAM_DIM = "dim"
+)
+
 // Schema represents schema info of collection in milvus
 type Schema struct {
 	CollectionName string
@@ -59,6 +64,7 @@ type Field struct {
 	Description string
 	DataType    FieldType
 	TypeParams  map[string]string
+	IndexParams map[string]string
 }
 
 // ProtoMessage generetes corresponding FieldSchema
@@ -71,6 +77,7 @@ func (f *Field) ProtoMessage() *schema.FieldSchema {
 		AutoID:       f.AutoID,
 		DataType:     schema.DataType(f.DataType),
 		TypeParams:   MapKvPairs(f.TypeParams),
+		IndexParams:  MapKvPairs(f.IndexParams),
 	}
 }
 
@@ -83,6 +90,7 @@ func (f *Field) ReadProto(p *schema.FieldSchema) *Field {
 	f.Description = p.GetDescription()
 	f.DataType = FieldType(p.GetDataType())
 	f.TypeParams = KvPairsMap(p.GetTypeParams())
+	f.IndexParams = KvPairsMap(p.GetIndexParams())
 
 	return f
 }

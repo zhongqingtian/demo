@@ -30,20 +30,10 @@ type grpcClient struct {
 	service server.MilvusServiceClient // service client stub
 }
 
-// Connect connect to service
-func (c *grpcClient) Connect(ctx context.Context, addr string) error {
-	opts := make([]grpc.DialOption, 0, 10)
+// connect connect to service
+func (c *grpcClient) connect(ctx context.Context, addr string, opts ...grpc.DialOption) error {
 
-	// try parse DialOptions
-	cOptsRaw := ctx.Value(dialOption)
-	if cOptsRaw != nil {
-		cOpts, ok := cOptsRaw.([]grpc.DialOption)
-		if ok {
-			opts = append(opts, cOpts...)
-		}
-	}
-
-	// if not options detected, use default
+	// if not options provided, use default settings
 	if len(opts) == 0 {
 		opts = append(opts, grpc.WithInsecure(),
 			grpc.WithBlock(),                //block connect until healthy or timeout
@@ -111,6 +101,9 @@ func (c *grpcClient) ListCollections(ctx context.Context) ([]*entity.Collection,
 			ID:   item,
 			Name: resp.GetCollectionNames()[idx],
 		}
+		if len(resp.GetInMemoryPercentages()) > idx {
+			collection.Loaded = resp.GetInMemoryPercentages()[idx] == 100
+		}
 		collections = append(collections, collection)
 	}
 	return collections, nil
@@ -149,7 +142,7 @@ func (c *grpcClient) CreateCollection(ctx context.Context, collSchema *entity.Sc
 	}
 	err = handleRespStatus(resp)
 	if err != nil {
-		return nil
+		return err
 	}
 	return nil
 }
@@ -271,8 +264,8 @@ func (c *grpcClient) HasCollection(ctx context.Context, collName string) (bool, 
 	if err != nil {
 		return false, err
 	}
-	if resp.Status.ErrorCode != common.ErrorCode_Success {
-		return false, errors.New("request failed")
+	if err := handleRespStatus(resp.GetStatus()); err != nil {
+		return false, err
 	}
 	return resp.GetValue(), nil
 }
@@ -300,6 +293,36 @@ func (c *grpcClient) GetCollectionStatistics(ctx context.Context, collName strin
 	return entity.KvPairsMap(resp.GetStats()), nil
 }
 
+// ShowCollection show collection status, used to check whether it is loaded or not
+func (c *grpcClient) ShowCollection(ctx context.Context, collName string) (*entity.Collection, error) {
+	if c.service == nil {
+		return nil, ErrClientNotReady
+	}
+	if err := c.checkCollectionExists(ctx, collName); err != nil {
+		return nil, err
+	}
+
+	req := &server.ShowCollectionsRequest{
+		Type:            server.ShowType_InMemory,
+		CollectionNames: []string{collName},
+	}
+
+	resp, err := c.service.ShowCollections(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	if err := handleRespStatus(resp.GetStatus()); err != nil {
+		return nil, err
+	}
+
+	if len(resp.CollectionIds) != 1 || len(resp.InMemoryPercentages) != 1 {
+		return nil, errors.New("response len not valid")
+	}
+	return &entity.Collection{
+		Loaded: resp.InMemoryPercentages[0] == 100, // TODO silverxia, the percentage can be either 0 or 100
+	}, nil
+}
+
 // LoadCollection load collection into memory
 func (c *grpcClient) LoadCollection(ctx context.Context, collName string, async bool) error {
 	if c.service == nil {
@@ -322,27 +345,22 @@ func (c *grpcClient) LoadCollection(ctx context.Context, collName string, async 
 	}
 
 	if !async {
-		segments, _ := c.GetPersistentSegmentInfo(ctx, collName)
-		target := make(map[int64]*entity.Segment)
-		for _, segment := range segments {
-			if segment.NumRows == 0 {
-				continue
+		for {
+			select {
+			case <-ctx.Done():
+				return errors.New("context deadline exceeded")
+			default:
 			}
-			target[segment.ID] = segment
-		}
-		for len(target) > 0 {
-			current, err := c.GetQuerySegmentInfo(ctx, collName)
-			if err == nil {
-				for _, segment := range current {
-					ts, has := target[segment.ID]
-					if has {
-						if segment.NumRows >= ts.NumRows {
-							delete(target, segment.ID)
-						}
-					}
-				}
+
+			coll, err := c.ShowCollection(ctx, collName)
+			if err != nil {
+				return err
 			}
-			time.Sleep(time.Millisecond * 100)
+			if coll.Loaded {
+				break
+			}
+
+			time.Sleep(200 * time.Millisecond) // TODO change to configuration
 		}
 	}
 	return nil

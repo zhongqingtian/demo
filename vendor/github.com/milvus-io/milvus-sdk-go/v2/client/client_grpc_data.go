@@ -16,6 +16,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
+	"strconv"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -25,7 +29,7 @@ import (
 	"github.com/milvus-io/milvus-sdk-go/v2/internal/proto/server"
 )
 
-// Index insert into collection with column-based format
+// Insert Index  into collection with column-based format
 // collName is the collection name
 // partitionName is the partition to insert, if not specified(empty), default partition will be used
 // columns are slice of the column-based data
@@ -80,8 +84,8 @@ func (c *grpcClient) Insert(ctx context.Context, collName string, partitionName 
 			case *entity.ColumnBinaryVector:
 				dim = column.Dim()
 			}
-			if fmt.Sprintf("%d", dim) != field.TypeParams["dim"] {
-				return nil, fmt.Errorf("params column %s vector dim %d not match collection definition, which has dim of %s", field.Name, dim, field.TypeParams["dim"])
+			if fmt.Sprintf("%d", dim) != field.TypeParams[entity.TYPE_PARAM_DIM] {
+				return nil, fmt.Errorf("params column %s vector dim %d not match collection definition, which has dim of %s", field.Name, dim, field.TypeParams[entity.TYPE_PARAM_DIM])
 			}
 		}
 	}
@@ -136,40 +140,88 @@ func (c *grpcClient) Flush(ctx context.Context, collName string, async bool) err
 	if err := handleRespStatus(resp.GetStatus()); err != nil {
 		return err
 	}
-	//TODO silverxia, add context done respect logic while waiting
 	if !async {
 		segmentIDs, has := resp.GetCollSegIDs()[collName]
-		if has {
-			waitingSet := make(map[int64]struct{})
-			for _, segmentID := range segmentIDs.GetData() {
-				waitingSet[segmentID] = struct{}{}
-			}
+		ids := segmentIDs.GetData()
+		if has && len(ids) > 0 {
 			flushed := func() bool {
-				segments, err := c.GetPersistentSegmentInfo(context.Background(), collName)
+				resp, err := c.service.GetFlushState(ctx, &server.GetFlushStateRequest{
+					SegmentIDs: ids,
+				})
 				if err != nil {
-					//TODO handles grpc failure, maybe need reconnect?
+					// TODO max retry
+					return false
 				}
-				flushed := 0
-				for _, segment := range segments {
-					if _, has := waitingSet[segment.ID]; !has {
-						continue
-					}
-					if !segment.Flushed() {
-						return false
-					}
-					flushed++
-				}
-				return len(waitingSet) == flushed
+				return resp.GetFlushed()
 			}
 			for !flushed() {
-				time.Sleep(500 * time.Millisecond)
+				// respect context deadline/cancel
+				select {
+				case <-ctx.Done():
+					return errors.New("deadline exceeded")
+				default:
+				}
+				time.Sleep(200 * time.Millisecond)
 			}
 		}
 	}
 	return nil
 }
 
-//BoolExprSearch search with bool expression
+// DeleteByPks deletes entries related to provided primary keys
+func (c *grpcClient) DeleteByPks(ctx context.Context, collName string, partitionName string, ids entity.Column) error {
+	if c.service == nil {
+		return ErrClientNotReady
+	}
+
+	// check collection name
+	coll, err := c.DescribeCollection(ctx, collName)
+	if err != nil {
+		return err
+	}
+	// check partition name
+	if partitionName != "" {
+		err := c.checkPartitionExists(ctx, collName, partitionName)
+		if err != nil {
+			return err
+		}
+	}
+	// check primary keys
+	if ids.Len() == 0 {
+		return errors.New("ids len must not be zero")
+	}
+	if ids.Type() != entity.FieldTypeInt64 {
+		return errors.New("only int64 pk is supported for now")
+	}
+
+	pkf := getPKField(coll.Schema)
+	// pkf shall not be nil since is returned from milvus
+	if pkf.Name != ids.Name() {
+		return errors.New("only delete by primary key is supported now")
+	}
+	// for now pk must be int64
+	expr := fmt.Sprintf("%s in %s", ids.Name(), strings.Join(strings.Fields(fmt.Sprint(ids.FieldData().GetScalars().GetLongData().GetData())), ","))
+
+	req := &server.DeleteRequest{
+		DbName:         "",
+		CollectionName: collName,
+		PartitionName:  partitionName,
+		Expr:           expr,
+	}
+
+	resp, err := c.service.Delete(ctx, req)
+	if err != nil {
+		return err
+	}
+	err = handleRespStatus(resp.GetStatus())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+//Search with bool expression
 func (c *grpcClient) Search(ctx context.Context, collName string, partitions []string,
 	expr string, outputFields []string, vectors []entity.Vector, vectorField string, metricType entity.MetricType, topK int, sp entity.SearchParam) ([]SearchResult, error) {
 	if c.service == nil {
@@ -190,6 +242,9 @@ func (c *grpcClient) Search(ctx context.Context, collName string, partitions []s
 	if err != nil {
 		return nil, err
 	}
+	if coll.Schema.CollectionName == "" {
+		coll.Schema.CollectionName = collName
+	}
 	mNameField := make(map[string]*entity.Field)
 	for _, field := range coll.Schema.Fields {
 		mNameField[field.Name] = field
@@ -204,7 +259,7 @@ func (c *grpcClient) Search(ctx context.Context, collName string, partitions []s
 	if !has {
 		return nil, fmt.Errorf("vector field %s does not exist in collection %s", vectorField, collName)
 	}
-	dimStr := vfDef.TypeParams["dim"]
+	dimStr := vfDef.TypeParams[entity.TYPE_PARAM_DIM]
 	for _, vector := range vectors {
 		if fmt.Sprintf("%d", vector.Dim()) != dimStr {
 			return nil, fmt.Errorf("vector %s has dim of %s while found search vector with dim %d", vectorField,
@@ -223,61 +278,183 @@ func (c *grpcClient) Search(ctx context.Context, collName string, partitions []s
 	}
 
 	// 2. Request milvus service
-	bs, _ := json.Marshal(sp.Params())
-	searchParams := entity.MapKvPairs(map[string]string{
-		"anns_field":  vectorField,
-		"topk":        fmt.Sprintf("%d", topK),
-		"params":      string(bs),
-		"metric_type": string(metricType),
-	})
-
-	req := &server.SearchRequest{
-		DbName:           "",
-		CollectionName:   collName,
-		PartitionNames:   []string{},
-		SearchParams:     searchParams,
-		Dsl:              expr,
-		DslType:          common.DslType_BoolExprV1,
-		OutputFields:     outputFields,
-		PlaceholderGroup: vector2PlaceholderGroupBytes(vectors),
+	reqs := splitSearchRequest(coll.Schema, partitions, expr, outputFields, vectors, vectorField, metricType, topK, sp)
+	if len(reqs) == 0 {
+		return nil, errors.New("empty request generated")
 	}
-	resp, err := c.service.Search(ctx, req)
-	if err != nil {
-		return []SearchResult{}, err
-	}
-	if err := handleRespStatus(resp.GetStatus()); err != nil {
-		return []SearchResult{}, err
-	}
-	// 3. parse result into result
-	results := resp.GetResults()
-	offset := 0
-	sr := make([]SearchResult, 0, results.GetNumQueries())
-	fieldDataList := results.GetFieldsData()
-	for i := 0; i < int(results.GetNumQueries()); i++ {
-
-		rc := int(results.GetTopks()[i]) // result entry count for current query
-		entry := SearchResult{
-			ResultCount: rc,
-			Scores:      results.GetScores()[offset:rc],
-		}
-		entry.IDs, entry.Err = entity.IDColumns(results.GetIds(), offset, offset+rc)
-		if entry.Err != nil {
-			offset += rc
-			continue
-		}
-		entry.Fields = make([]entity.Column, 0, len(fieldDataList))
-		for _, fieldData := range fieldDataList {
-			column, err := entity.FieldDataColumn(fieldData, offset, offset+rc)
+	wg := &sync.WaitGroup{}
+	wg.Add(len(reqs))
+	var batchErr error
+	sr := make([]SearchResult, 0, len(vectors))
+	mut := sync.Mutex{}
+	for _, req := range reqs {
+		go func(req *server.SearchRequest) {
+			defer wg.Done()
+			resp, err := c.service.Search(ctx, req)
 			if err != nil {
-				entry.Err = err
-				continue
+				batchErr = err
+				return
 			}
-			entry.Fields = append(entry.Fields, column)
-		}
-		sr = append(sr, entry)
-		offset += rc
+			if err := handleRespStatus(resp.GetStatus()); err != nil {
+				batchErr = err
+				return
+			}
+			// 3. parse result into result
+			results := resp.GetResults()
+			offset := 0
+			fieldDataList := results.GetFieldsData()
+			for i := 0; i < int(results.GetNumQueries()); i++ {
+
+				rc := int(results.GetTopks()[i]) // result entry count for current query
+				entry := SearchResult{
+					ResultCount: rc,
+					Scores:      results.GetScores()[offset : offset+rc],
+				}
+				entry.IDs, entry.Err = entity.IDColumns(results.GetIds(), offset, offset+rc)
+				if entry.Err != nil {
+					offset += rc
+					continue
+				}
+				entry.Fields = make([]entity.Column, 0, len(fieldDataList))
+				for _, fieldData := range fieldDataList {
+					column, err := entity.FieldDataColumn(fieldData, offset, offset+rc)
+					if err != nil {
+						entry.Err = err
+						continue
+					}
+					entry.Fields = append(entry.Fields, column)
+				}
+				mut.Lock()
+				sr = append(sr, entry)
+				mut.Unlock()
+				offset += rc
+			}
+		}(req)
+	}
+	wg.Wait()
+	if batchErr != nil {
+		return []SearchResult{}, batchErr
 	}
 	return sr, nil
+}
+
+// QueryByPks query record by specified primary key(s)
+func (c *grpcClient) QueryByPks(ctx context.Context, collectionName string, partitionNames []string, ids entity.Column, outputFields []string) ([]entity.Column, error) {
+	if c.service == nil {
+		return nil, ErrClientNotReady
+	}
+
+	// check collection exists and get collection schema
+	coll, err := c.DescribeCollection(ctx, collectionName)
+	if err != nil {
+		return nil, err
+	}
+	// check partition exists
+	for _, partitionName := range partitionNames {
+		err := c.checkPartitionExists(ctx, collectionName, partitionName)
+		if err != nil {
+			return nil, err
+		}
+	}
+	// check primary keys
+	if ids.Len() == 0 {
+		return nil, errors.New("ids len must not be zero")
+	}
+	if ids.Type() != entity.FieldTypeInt64 {
+		return nil, errors.New("only int64 pk is supported for now")
+	}
+
+	pkf := getPKField(coll.Schema)
+	// pkf shall not be nil since is returned from milvus
+	if pkf.Name != ids.Name() {
+		return nil, errors.New("only delete by primary key is supported now")
+	}
+	// for now pk must be int64
+	expr := fmt.Sprintf("%s in %s", ids.Name(), strings.Join(strings.Fields(fmt.Sprint(ids.FieldData().GetScalars().GetLongData().GetData())), ","))
+
+	req := &server.QueryRequest{
+		DbName:         "", // reserved field
+		CollectionName: collectionName,
+		PartitionNames: partitionNames,
+		OutputFields:   outputFields,
+		Expr:           expr,
+	}
+	resp, err := c.service.Query(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	err = handleRespStatus(resp.GetStatus())
+	if err != nil {
+		return nil, err
+	}
+
+	fieldsData := resp.GetFieldsData()
+	columns := make([]entity.Column, 0, len(fieldsData))
+	for _, fieldData := range resp.GetFieldsData() {
+		if fieldData.GetType() == schema.DataType_FloatVector ||
+			fieldData.GetType() == schema.DataType_BinaryVector {
+			column, err := entity.FieldDataVector(fieldData)
+			if err != nil {
+				return nil, err
+			}
+			columns = append(columns, column)
+			continue
+		}
+		column, err := entity.FieldDataColumn(fieldData, 0, -1)
+		if err != nil {
+			return nil, err
+		}
+		columns = append(columns, column)
+	}
+
+	return columns, nil
+}
+
+func getPKField(schema *entity.Schema) *entity.Field {
+	for _, f := range schema.Fields {
+		if f.PrimaryKey {
+			return f
+		}
+	}
+	return nil
+}
+
+func splitSearchRequest(sch *entity.Schema, partitions []string,
+	expr string, outputFields []string, vectors []entity.Vector, vectorField string,
+	metricType entity.MetricType, topK int, sp entity.SearchParam) []*server.SearchRequest {
+	params := sp.Params()
+	bs, _ := json.Marshal(params)
+	searchParams := entity.MapKvPairs(map[string]string{
+		"anns_field":    vectorField,
+		"topk":          fmt.Sprintf("%d", topK),
+		"params":        string(bs),
+		"metric_type":   string(metricType),
+		"round_decimal": "-1",
+	})
+
+	ers := estRowSize(sch, outputFields)
+	maxBatch := int(math.Ceil(float64(5*1024*1024) / float64(ers*int64(topK))))
+	result := []*server.SearchRequest{}
+	for i := 0; i*maxBatch < len(vectors); i++ {
+		start := i * maxBatch
+		end := (i + 1) * maxBatch
+		if end > len(vectors) {
+			end = len(vectors)
+		}
+		batchVectors := vectors[start:end]
+		req := &server.SearchRequest{
+			DbName:           "",
+			CollectionName:   sch.CollectionName,
+			PartitionNames:   partitions,
+			SearchParams:     searchParams,
+			Dsl:              expr,
+			DslType:          common.DslType_BoolExprV1,
+			OutputFields:     outputFields,
+			PlaceholderGroup: vector2PlaceholderGroupBytes(batchVectors),
+		}
+		result = append(result, req)
+	}
+	return result
 }
 
 // GetPersistentSegmentInfo get persistent segment info
@@ -512,4 +689,50 @@ func isCollectionPrimaryKey(coll *entity.Collection, column entity.Column) bool 
 		}
 	}
 	return false
+}
+
+// estRowSize estimate size per row for the specified schema
+func estRowSize(sch *entity.Schema, selected []string) int64 {
+	var total int64
+	for _, field := range sch.Fields {
+		if len(selected) > 0 {
+			found := false
+			for _, sel := range selected {
+				if field.Name == sel {
+					found = true
+					break
+				}
+			}
+			if !found {
+				continue
+			}
+		}
+		switch field.DataType {
+		case entity.FieldTypeBool:
+			total++
+		case entity.FieldTypeInt8:
+			total++
+		case entity.FieldTypeInt16:
+			total += 2
+		case entity.FieldTypeInt32:
+			total += 4
+		case entity.FieldTypeInt64:
+			total += 8
+		case entity.FieldTypeFloat:
+			total += 4
+		case entity.FieldTypeDouble:
+			total += 8
+		case entity.FieldTypeString:
+			//TODO string need varchar[max] syntax like limitation
+		case entity.FieldTypeFloatVector:
+			dimStr := field.TypeParams[entity.TYPE_PARAM_DIM]
+			dim, _ := strconv.ParseInt(dimStr, 10, 64)
+			total += 4 * dim
+		case entity.FieldTypeBinaryVector:
+			dimStr := field.TypeParams[entity.TYPE_PARAM_DIM]
+			dim, _ := strconv.ParseInt(dimStr, 10, 64)
+			total += 4 * dim / 8
+		}
+	}
+	return total
 }
