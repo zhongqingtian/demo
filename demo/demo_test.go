@@ -1,6 +1,8 @@
 package demo
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -79,4 +81,44 @@ func TestSS_GetName(t *testing.T) {
      rw = f
 	fmt.Println(reflect.TypeOf(rw))
 
+}
+
+type Much struct {
+	Status         int    `json:"status"`
+	Result         int    `json:"result"`
+	ExpirationTime string `json:"expiration_time"`
+	UserRole       int    `json:"user_role"`
+	Desc           string `json:"desc"`
+}
+
+func Example_much() {
+	demo := Much{}
+	outInterface(context.Background(), demo, setMuch(&demo))
+
+	// Output:
+	// pointer_test.Much{Status:0, Result:0, ExpirationTime:"", UserRole:0, Desc:""}
+}
+
+func setMuch(demo *Much) error {
+	return json.Unmarshal([]byte(`{"status":10,"result":1,"UserRole":6}`), demo)
+}
+
+type Single struct {
+	Id int `json:"id"`
+}
+
+func Example_single() {
+	demo := Single{}
+	outInterface(context.Background(), demo, setSingle(&demo))
+
+	// Output:
+	// pointer_test.Single{Id:10}
+}
+
+func setSingle(demo *Single) error {
+	return json.Unmarshal([]byte(`{"id":10}`), demo)
+}
+
+func outInterface(ctx context.Context, demo interface{}, err error)  {
+	fmt.Printf("%#v", demo)
 }
