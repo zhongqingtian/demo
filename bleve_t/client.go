@@ -57,9 +57,9 @@ type Data struct {
 }
 
 func Insert() {
-	data1 := Data{Name: "zhangsan", Age: 1, Ctime: time.Now(), KeyWord: "newwpp.docer.wps.cn"}
-	data2 := Data{Name: "lisi", Age: 2, Ctime: time.Now(), KeyWord: "jimo-mb-api.docer.wps.cn"}
-	data3 := Data{Name: "chenli", Age: 3, Ctime: time.Now(), KeyWord: "jimo-beautify.docer.wps.cn"}
+	data1 := Data{Name: "zhangsan", Age: 1, Ctime: time.Now(), KeyWord: "aaa.kk.s13"}
+	data2 := Data{Name: "lisi", Age: 2, Ctime: time.Now(), KeyWord: "aaa.kk.s1344"}
+	data3 := Data{Name: "chenli", Age: 3, Ctime: time.Now(), KeyWord: "bbbb.kk.s13"}
 	exampleIndex.Index("data1", data1)
 	exampleIndex.Index("data2", data2)
 	exampleIndex.Index("data3", data3)
@@ -85,7 +85,7 @@ func Insert() {
 }
 
 func Search()  {
-	query := bleve.NewWildcardQuery("*jimo-beautify*")
+	query := bleve.NewWildcardQuery("*aaa*")
 	// query := bleve.NewQueryStringQuery("re")
 	search := bleve.NewSearchRequest(query)
 	//search.Highlight =  bleve.NewHighlight()
