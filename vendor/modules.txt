@@ -331,6 +331,9 @@ github.com/leodido/go-urn
 # github.com/lxmgo/config v0.0.0-20180313024057-8db99aca0f7e
 ## explicit
 github.com/lxmgo/config
+# github.com/lycclsltt/system v0.0.0-20170614111327-04719ac225e4
+## explicit
+github.com/lycclsltt/system
 # github.com/mailru/easyjson v0.7.6
 github.com/mailru/easyjson
 github.com/mailru/easyjson/buffer

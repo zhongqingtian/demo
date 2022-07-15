@@ -41,6 +41,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/lxmgo/config v0.0.0-20180313024057-8db99aca0f7e
+	github.com/lycclsltt/system v0.0.0-20170614111327-04719ac225e4
 	github.com/mattn/go-colorable v0.1.7 // indirect
 	github.com/milvus-io/milvus-sdk-go/v2 v2.0.0
 	github.com/moul/http2curl v1.0.0 // indirect
