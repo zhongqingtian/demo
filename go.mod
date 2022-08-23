@@ -18,7 +18,6 @@ require (
 	github.com/eapache/go-resiliency v1.1.0 // indirect
 	github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 // indirect
 	github.com/eapache/queue v1.1.0 // indirect
-	github.com/fasthttp-contrib/websocket v0.0.0-20160511215533-1f3b11f56072 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-playground/universal-translator v0.17.0 // indirect
@@ -34,7 +33,6 @@ require (
 	github.com/gopherjs/gopherjs v0.0.0-20190910122728-9d188e94fb99 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.1-0.20190118093823-f849b5445de4 // indirect
 	github.com/jonboulle/clockwork v0.1.0 // indirect
-	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/iris v0.0.2
 	github.com/kataras/iris/v12 v12.1.8 // indirect
 	github.com/kr/pretty v0.2.1 // indirect
@@ -42,11 +40,12 @@ require (
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/lxmgo/config v0.0.0-20180313024057-8db99aca0f7e
 	github.com/lycclsltt/system v0.0.0-20170614111327-04719ac225e4
-	github.com/mattn/go-colorable v0.1.7 // indirect
+	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/milvus-io/milvus-sdk-go/v2 v2.0.0
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/nsqio/go-nsq v1.0.8
+	github.com/ofabry/go-callvis v0.6.1
 	github.com/olivere/elastic/v7 v7.0.22
 	github.com/onsi/ginkgo v1.12.1 // indirect
 	github.com/onsi/gomega v1.10.0 // indirect
@@ -62,7 +61,6 @@ require (
 	github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5 // indirect
 	github.com/valyala/fasthttp v1.17.0 // indirect
 	github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2 // indirect
-	github.com/yudai/pp v2.0.1+incompatible // indirect
 	go.etcd.io/etcd v3.3.25+incompatible
 	go.etcd.io/etcd/api/v3 v3.5.2
 	go.etcd.io/etcd/client/v3 v3.5.2
@@ -81,6 +79,6 @@ require (
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
 
-replace github.com/coreos/bbolt => go.etcd.io/bbolt v1.3.5
+// replace github.com/coreos/bbolt => go.etcd.io/bbolt v1.3.5
 
 replace go.etcd.io/bbolt => github.com/coreos/bbolt v1.3.5

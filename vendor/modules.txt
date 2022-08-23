@@ -128,7 +128,7 @@ github.com/blevesearch/zapx/v15
 github.com/cespare/xxhash/v2
 # github.com/chris-ramon/douceur v0.2.0
 github.com/chris-ramon/douceur/parser
-# github.com/coreos/bbolt v1.3.2 => go.etcd.io/bbolt v1.3.5
+# github.com/coreos/bbolt v1.3.2
 ## explicit
 # github.com/coreos/etcd v3.3.25+incompatible
 ## explicit
@@ -177,8 +177,6 @@ github.com/eapache/queue
 # github.com/eknkc/amber v0.0.0-20171010120322-cdade1c07385
 github.com/eknkc/amber
 github.com/eknkc/amber/parser
-# github.com/fasthttp-contrib/websocket v0.0.0-20160511215533-1f3b11f56072
-## explicit
 # github.com/fatih/structs v1.1.0
 github.com/fatih/structs
 # github.com/fsnotify/fsnotify v1.4.9
@@ -268,8 +266,6 @@ github.com/jmespath/go-jmespath
 github.com/josharian/intern
 # github.com/json-iterator/go v1.1.11
 github.com/json-iterator/go
-# github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88
-## explicit
 # github.com/kataras/blocks v0.0.2
 github.com/kataras/blocks
 # github.com/kataras/golog v0.0.18
@@ -339,9 +335,8 @@ github.com/mailru/easyjson
 github.com/mailru/easyjson/buffer
 github.com/mailru/easyjson/jlexer
 github.com/mailru/easyjson/jwriter
-# github.com/mattn/go-colorable v0.1.7
-## explicit
 # github.com/mattn/go-isatty v0.0.12
+## explicit
 github.com/mattn/go-isatty
 # github.com/matttproud/golang_protobuf_extensions v1.0.1
 github.com/matttproud/golang_protobuf_extensions/pbutil
@@ -370,6 +365,9 @@ github.com/mschoch/smat
 # github.com/nsqio/go-nsq v1.0.8
 ## explicit
 github.com/nsqio/go-nsq
+# github.com/ofabry/go-callvis v0.6.1
+## explicit
+github.com/ofabry/go-callvis/examples/main/mypkg
 # github.com/olivere/elastic/v7 v7.0.22
 ## explicit
 github.com/olivere/elastic/v7
@@ -452,8 +450,6 @@ github.com/xdg/stringprep
 ## explicit
 # github.com/yosssi/ace v0.0.5
 github.com/yosssi/ace
-# github.com/yudai/pp v2.0.1+incompatible
-## explicit
 # go.etcd.io/bbolt v1.3.5 => github.com/coreos/bbolt v1.3.5
 go.etcd.io/bbolt
 # go.etcd.io/etcd v3.3.25+incompatible
@@ -678,5 +674,4 @@ gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 gopkg.in/yaml.v3
 # google.golang.org/grpc => google.golang.org/grpc v1.26.0
-# github.com/coreos/bbolt => go.etcd.io/bbolt v1.3.5
 # go.etcd.io/bbolt => github.com/coreos/bbolt v1.3.5
