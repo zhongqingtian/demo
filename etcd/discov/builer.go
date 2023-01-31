@@ -17,7 +17,6 @@ type Builder struct {
 	domain  string
 }
 
-
 func NewBuilder(client *clientv3.Client, domain string) *Builder {
 	if domain == "" {
 		log.Fatal("domain cannot be empty")
@@ -42,7 +41,7 @@ func (b *Builder) Build(target resolver.Target, cc resolver.ClientConn, opts res
 		log.Infof("grpc address change to %+v", address)
 		r.Update(address)
 	})
-	prefix := fmt.Sprintf("/%s/%s/%s/", "docer_discov", clusterKey, target.Endpoint)
+	prefix := fmt.Sprintf("/%s/%s/%s/", "xxx_discov", clusterKey, target.Endpoint)
 	log.Infof("grpc address prefix is %+s", prefix)
 	b.watcher.SetPrefix(prefix)
 	b.watcher.AddEvent(notify)

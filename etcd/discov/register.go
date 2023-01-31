@@ -26,7 +26,7 @@ func NewRegister(client *clientv3.Client) *register {
 	return r
 }
 
-//Register 服务注册
+// Register 服务注册
 func (r *register) Discov(serviceName string, port string) <-chan error {
 	e := make(chan error)
 	split := strings.Split(port, ":")
@@ -107,5 +107,5 @@ func (r *register) keepAlive(restart chan struct{}) error {
 }
 
 func (r *register) key() string {
-	return fmt.Sprintf("/%s/%s/%s/%s", "docer_discov", clusterKey, r.serviceName, r.serviceAddr)
+	return fmt.Sprintf("/%s/%s/%s/%s", "xxx_discov", clusterKey, r.serviceName, r.serviceAddr)
 }
