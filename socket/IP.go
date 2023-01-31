@@ -21,6 +21,6 @@ func paseIp() {
 	os.Exit(0)
 }
 
-func main() {
+/*func main() {
 	paseIp()
-}
+}*/

@@ -1,9 +1,9 @@
+//go:build !amd64 || appengine || !gc || noasm
 // +build !amd64 appengine !gc noasm
 
 package s2
 
 import (
-	"bytes"
 	"math/bits"
 )
 
@@ -12,6 +12,7 @@ import (
 // been written.
 //
 // It also assumes that:
+//
 //	len(dst) >= MaxEncodedLen(len(src))
 func encodeBlock(dst, src []byte) (d int) {
 	if len(src) < minNonLiteralBlockSize {
@@ -20,9 +21,46 @@ func encodeBlock(dst, src []byte) (d int) {
 	return encodeBlockGo(dst, src)
 }
 
+// encodeBlockBetter encodes a non-empty src to a guaranteed-large-enough dst. It
+// assumes that the varint-encoded length of the decompressed bytes has already
+// been written.
+//
+// It also assumes that:
+//
+//	len(dst) >= MaxEncodedLen(len(src))
+func encodeBlockBetter(dst, src []byte) (d int) {
+	return encodeBlockBetterGo(dst, src)
+}
+
+// encodeBlockBetter encodes a non-empty src to a guaranteed-large-enough dst. It
+// assumes that the varint-encoded length of the decompressed bytes has already
+// been written.
+//
+// It also assumes that:
+//
+//	len(dst) >= MaxEncodedLen(len(src))
+func encodeBlockBetterSnappy(dst, src []byte) (d int) {
+	return encodeBlockBetterSnappyGo(dst, src)
+}
+
+// encodeBlock encodes a non-empty src to a guaranteed-large-enough dst. It
+// assumes that the varint-encoded length of the decompressed bytes has already
+// been written.
+//
+// It also assumes that:
+//
+//	len(dst) >= MaxEncodedLen(len(src))
+func encodeBlockSnappy(dst, src []byte) (d int) {
+	if len(src) < minNonLiteralBlockSize {
+		return 0
+	}
+	return encodeBlockSnappyGo(dst, src)
+}
+
 // emitLiteral writes a literal chunk and returns the number of bytes written.
 //
 // It assumes that:
+//
 //	dst is long enough to hold the encoded bytes
 //	0 <= len(lit) && len(lit) <= math.MaxUint32
 func emitLiteral(dst, lit []byte) int {
@@ -113,6 +151,7 @@ func emitRepeat(dst []byte, offset, length int) int {
 // emitCopy writes a copy chunk and returns the number of bytes written.
 //
 // It assumes that:
+//
 //	dst is long enough to hold the encoded bytes
 //	1 <= offset && offset <= math.MaxUint32
 //	4 <= length && length <= 1 << 24
@@ -147,14 +186,23 @@ func emitCopy(dst []byte, offset, length int) int {
 
 	// Offset no more than 2 bytes.
 	if length > 64 {
-		// Emit a length 60 copy, encoded as 3 bytes.
-		// Emit remaining as repeat value (minimum 4 bytes).
-		dst[2] = uint8(offset >> 8)
-		dst[1] = uint8(offset)
-		dst[0] = 59<<2 | tagCopy2
-		length -= 60
+		off := 3
+		if offset < 2048 {
+			// emit 8 bytes as tagCopy1, rest as repeats.
+			dst[1] = uint8(offset)
+			dst[0] = uint8(offset>>8)<<5 | uint8(8-4)<<2 | tagCopy1
+			length -= 8
+			off = 2
+		} else {
+			// Emit a length 60 copy, encoded as 3 bytes.
+			// Emit remaining as repeat value (minimum 4 bytes).
+			dst[2] = uint8(offset >> 8)
+			dst[1] = uint8(offset)
+			dst[0] = 59<<2 | tagCopy2
+			length -= 60
+		}
 		// Emit remaining as repeats, at least 4 bytes remain.
-		return 3 + emitRepeat(dst[3:], offset, length)
+		return off + emitRepeat(dst[off:], offset, length)
 	}
 	if length >= 12 || offset >= 2048 {
 		// Emit the remaining copy, encoded as 3 bytes.
@@ -172,6 +220,7 @@ func emitCopy(dst []byte, offset, length int) int {
 // emitCopyNoRepeat writes a copy chunk and returns the number of bytes written.
 //
 // It assumes that:
+//
 //	dst is long enough to hold the encoded bytes
 //	1 <= offset && offset <= math.MaxUint32
 //	4 <= length && length <= 1 << 24
@@ -231,8 +280,8 @@ func emitCopyNoRepeat(dst []byte, offset, length int) int {
 // matchLen returns how many bytes match in a and b
 //
 // It assumes that:
-//   len(a) <= len(b)
 //
+//	len(a) <= len(b)
 func matchLen(a []byte, b []byte) int {
 	b = b[:len(a)]
 	var checked int
@@ -262,189 +311,4 @@ func matchLen(a []byte, b []byte) int {
 		}
 	}
 	return len(a) + checked
-}
-
-func encodeBlockSnappy(dst, src []byte) (d int) {
-	// Initialize the hash table.
-	const (
-		tableBits    = 14
-		maxTableSize = 1 << tableBits
-	)
-
-	var table [maxTableSize]uint32
-
-	// sLimit is when to stop looking for offset/length copies. The inputMargin
-	// lets us use a fast path for emitLiteral in the main loop, while we are
-	// looking for copies.
-	sLimit := len(src) - inputMargin
-
-	// Bail if we can't compress to at least this.
-	dstLimit := len(src) - len(src)>>5 - 5
-
-	// nextEmit is where in src the next emitLiteral should start from.
-	nextEmit := 0
-
-	// The encoded form must start with a literal, as there are no previous
-	// bytes to copy, so we start looking for hash matches at s == 1.
-	s := 1
-	cv := load64(src, s)
-
-	// We search for a repeat at -1, but don't output repeats when nextEmit == 0
-	repeat := 1
-
-	for {
-		candidate := 0
-		for {
-			// Next src position to check
-			nextS := s + (s-nextEmit)>>6 + 4
-			if nextS > sLimit {
-				goto emitRemainder
-			}
-			hash0 := hash6(cv, tableBits)
-			hash1 := hash6(cv>>8, tableBits)
-			candidate = int(table[hash0])
-			candidate2 := int(table[hash1])
-			table[hash0] = uint32(s)
-			table[hash1] = uint32(s + 1)
-			hash2 := hash6(cv>>16, tableBits)
-
-			// Check repeat at offset checkRep.
-			const checkRep = 1
-			if uint32(cv>>(checkRep*8)) == load32(src, s-repeat+checkRep) {
-				base := s + checkRep
-				// Extend back
-				for i := base - repeat; base > nextEmit && i > 0 && src[i-1] == src[base-1]; {
-					i--
-					base--
-				}
-				d += emitLiteral(dst[d:], src[nextEmit:base])
-
-				// Extend forward
-				candidate := s - repeat + 4 + checkRep
-				s += 4 + checkRep
-				for s <= sLimit {
-					if diff := load64(src, s) ^ load64(src, candidate); diff != 0 {
-						s += bits.TrailingZeros64(diff) >> 3
-						break
-					}
-					s += 8
-					candidate += 8
-				}
-
-				d += emitCopyNoRepeat(dst[d:], repeat, s-base)
-				nextEmit = s
-				if s >= sLimit {
-					goto emitRemainder
-				}
-
-				cv = load64(src, s)
-				continue
-			}
-
-			if uint32(cv) == load32(src, candidate) {
-				break
-			}
-			candidate = int(table[hash2])
-			if uint32(cv>>8) == load32(src, candidate2) {
-				table[hash2] = uint32(s + 2)
-				candidate = candidate2
-				s++
-				break
-			}
-			table[hash2] = uint32(s + 2)
-			if uint32(cv>>16) == load32(src, candidate) {
-				s += 2
-				break
-			}
-
-			cv = load64(src, nextS)
-			s = nextS
-		}
-
-		// Extend backwards
-		for candidate > 0 && s > nextEmit && src[candidate-1] == src[s-1] {
-			candidate--
-			s--
-		}
-
-		// Bail if we exceed the maximum size.
-		if d+(s-nextEmit) > dstLimit {
-			return 0
-		}
-
-		// A 4-byte match has been found. We'll later see if more than 4 bytes
-		// match. But, prior to the match, src[nextEmit:s] are unmatched. Emit
-		// them as literal bytes.
-
-		d += emitLiteral(dst[d:], src[nextEmit:s])
-
-		// Call emitCopy, and then see if another emitCopy could be our next
-		// move. Repeat until we find no match for the input immediately after
-		// what was consumed by the last emitCopy call.
-		//
-		// If we exit this loop normally then we need to call emitLiteral next,
-		// though we don't yet know how big the literal will be. We handle that
-		// by proceeding to the next iteration of the main loop. We also can
-		// exit this loop via goto if we get close to exhausting the input.
-		for {
-			// Invariant: we have a 4-byte match at s, and no need to emit any
-			// literal bytes prior to s.
-			base := s
-			repeat = base - candidate
-
-			// Extend the 4-byte match as long as possible.
-			s += 4
-			candidate += 4
-			for s <= len(src)-8 {
-				if diff := load64(src, s) ^ load64(src, candidate); diff != 0 {
-					s += bits.TrailingZeros64(diff) >> 3
-					break
-				}
-				s += 8
-				candidate += 8
-			}
-
-			d += emitCopyNoRepeat(dst[d:], repeat, s-base)
-			if false {
-				// Validate match.
-				a := src[base:s]
-				b := src[base-repeat : base-repeat+(s-base)]
-				if !bytes.Equal(a, b) {
-					panic("mismatch")
-				}
-			}
-
-			nextEmit = s
-			if s >= sLimit {
-				goto emitRemainder
-			}
-
-			if d > dstLimit {
-				// Do we have space for more, if not bail.
-				return 0
-			}
-			// Check for an immediate match, otherwise start search at s+1
-			x := load64(src, s-2)
-			m2Hash := hash6(x, tableBits)
-			currHash := hash6(x>>16, tableBits)
-			candidate = int(table[currHash])
-			table[m2Hash] = uint32(s - 2)
-			table[currHash] = uint32(s)
-			if uint32(x>>16) != load32(src, candidate) {
-				cv = load64(src, s+1)
-				s++
-				break
-			}
-		}
-	}
-
-emitRemainder:
-	if nextEmit < len(src) {
-		// Bail if we exceed the maximum size.
-		if d+len(src)-nextEmit > dstLimit {
-			return 0
-		}
-		d += emitLiteral(dst[d:], src[nextEmit:])
-	}
-	return d
 }

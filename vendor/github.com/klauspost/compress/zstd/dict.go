@@ -1,7 +1,6 @@
 package zstd
 
 import (
-	"bytes"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -13,13 +12,30 @@ import (
 type dict struct {
 	id uint32
 
-	litDec              *huff0.Scratch
+	litEnc              *huff0.Scratch
 	llDec, ofDec, mlDec sequenceDec
-	offsets             [3]int
-	content             []byte
+	//llEnc, ofEnc, mlEnc []*fseEncoder
+	offsets [3]int
+	content []byte
 }
 
-var dictMagic = [4]byte{0x37, 0xa4, 0x30, 0xec}
+const dictMagic = "\x37\xa4\x30\xec"
+
+// ID returns the dictionary id or 0 if d is nil.
+func (d *dict) ID() uint32 {
+	if d == nil {
+		return 0
+	}
+	return d.id
+}
+
+// DictContentSize returns the dictionary content size or 0 if d is nil.
+func (d *dict) DictContentSize() int {
+	if d == nil {
+		return 0
+	}
+	return len(d.content)
+}
 
 // Load a dictionary as described in
 // https://github.com/facebook/zstd/blob/master/doc/zstd_compression_format.md#dictionary-format
@@ -33,7 +49,7 @@ func loadDict(b []byte) (*dict, error) {
 		ofDec: sequenceDec{fse: &fseDecoder{}},
 		mlDec: sequenceDec{fse: &fseDecoder{}},
 	}
-	if !bytes.Equal(b[:4], dictMagic[:]) {
+	if string(b[:4]) != dictMagic {
 		return nil, ErrMagicMismatch
 	}
 	d.id = binary.LittleEndian.Uint32(b[4:8])
@@ -43,10 +59,11 @@ func loadDict(b []byte) (*dict, error) {
 
 	// Read literal table
 	var err error
-	d.litDec, b, err = huff0.ReadTable(b[8:], nil)
+	d.litEnc, b, err = huff0.ReadTable(b[8:], nil)
 	if err != nil {
 		return nil, err
 	}
+	d.litEnc.Reuse = huff0.ReusePolicyMust
 
 	br := byteReader{
 		b:   b,
@@ -64,7 +81,7 @@ func loadDict(b []byte) (*dict, error) {
 			println("Transform table error:", err)
 			return err
 		}
-		if debug {
+		if debugDecoder || debugEncoder {
 			println("Read table ok", "symbolLen:", dec.symbolLen)
 		}
 		// Set decoders as predefined so they aren't reused.
